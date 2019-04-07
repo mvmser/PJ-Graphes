@@ -37,7 +37,9 @@ public class testGraphes {
 			int numeroFichier = 0;
 			while(!OK) {
 				try {
-					numeroFichier = sc.nextInt();
+					//numeroFichier = sc.nextInt();
+					numeroFichier = 1;
+
 					OK = true;
 				} catch (InputMismatchException e) {
 					System.out.print("Entrée incorrecte, entrez un bon numero de fichier: ");
@@ -48,7 +50,14 @@ public class testGraphes {
 			
 			Graphe graphe = new Graphe(numeroFichier);
 			
-			System.out.println(graphe);
+			//System.out.println(graphe);
+			
+			System.out.println("\nMatrice d'adjacence:");
+			graphe.printMatrix(graphe.createAdjacencyMatrix());
+			
+			System.out.println("\nMatrice des valeurs:");
+			graphe.printMatrix(graphe.createValuesMatrix());
+			
 
 			/** Demander à l'utilisateur s'il veut continuer ou quitter */
 			String reponse = null;
