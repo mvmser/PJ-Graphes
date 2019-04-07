@@ -6,8 +6,6 @@ import java.util.Scanner;
 import readGraphe.Graphe;
 
 /**
- * 
- * @author SERHIR, ZARGA, CHIBOUT
  * @version 1.0
  *
  */

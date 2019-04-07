@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * @author SERHIR, ZARGA, CHIBOUT
  * @version 1.0
  *
  */
