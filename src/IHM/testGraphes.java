@@ -34,28 +34,26 @@ public class testGraphes {
 			
 			/** Verifier que l'utilisateur entre bien un nombre*/
 			boolean OK = false;
-			int numeroFichier = 0;
-			while(!OK) {
-				try {
-					//numeroFichier = sc.nextInt();
-					numeroFichier = 1;
-
-					OK = true;
-				} catch (InputMismatchException e) {
-					System.out.print("Entrée incorrecte, entrez un bon numero de fichier: ");
-					sc.nextLine();
-				}
-			}
-			sc.nextLine(); //clear buffer
+			int numeroFichier = 1;
+//			while(!OK) {
+//				try {
+//					numeroFichier = sc.nextInt();
+//					OK = true;
+//				} catch (InputMismatchException e) {
+//					System.out.print("Entrée incorrecte, entrez un bon numero de fichier: ");
+//					sc.nextLine();
+//				}
+//			}
+//			sc.nextLine(); //clear buffer
 			
 			Graphe graphe = new Graphe(numeroFichier);
 			
 			//System.out.println(graphe);
 			
-			System.out.println("\nMatrice d'adjacence:");
+			System.out.println("\nMatrice d'adjacence: (nombre de sommets: " + graphe.getNbSommets() + ")" );
 			graphe.printMatrix(graphe.createAdjacencyMatrix());
 			
-			System.out.println("\nMatrice des valeurs:");
+			System.out.println("\nMatrice des valeurs: (nombre de sommets: " + graphe.getNbSommets() + ")");
 			graphe.printMatrix(graphe.createValuesMatrix());
 			
 
