@@ -2,6 +2,7 @@ package readGraphe;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -29,6 +30,14 @@ public class Graphe {
 		readGraphe(numeroFichier);
 	}
 	
+	public int getNbSommets() {
+		return nbSommets;
+	}
+
+	public int getNbTrinome() {
+		return nbTrinome;
+	}
+
 	/**
 	 * Permet de lire un graphe et de l'enregistrer
 	 * @param numeroFichier
@@ -135,13 +144,13 @@ public class Graphe {
 			for(int j = 0; j < matrix.length; j++) {
 				/** Rien en 0,0*/
 				if(i == 0 && j == 0)
-					matrix[i][j] = "/" + " ";
+					matrix[i][j] = "/ ";
 				else if(j == 0)
-					matrix[i][j] = Integer.toString(i - 1) + " ";
+					matrix[i][j] = Integer.toString(i - 1) + "";
 				else if(i == 0)
-					matrix[i][j] = Integer.toString(j - 1) + " ";
+					matrix[i][j] = " " + Integer.toString(j - 1) + " ";
 				else 
-					matrix[i][j] = "- ";
+					matrix[i][j] = "  -";
 			}
 		}
 		
@@ -180,10 +189,19 @@ public class Graphe {
 			/** x: les colonnes*/
 			for(int x = 1; x < adjacencyMatrix.length; x++) {
 				if(this.isXIncidentToY(x,y))
-					adjacencyMatrix[x][y] = "1 ";
+					adjacencyMatrix[x][y] = "  1";
 			}
 		}
 		return adjacencyMatrix;
+	}
+	
+	public String whatIsValue(int x, int y) {
+		
+		for(int i = 0; i < nbTrinome; i++) {
+			if( (arcs.get(i))[0] == x - 1 && (arcs.get(i))[2] == y - 1)
+				return String.format(" %2d", (arcs.get(i))[1]);
+		}
+		return "  -";
 	}
 	
 	/**
@@ -199,8 +217,7 @@ public class Graphe {
 		for(int y = 1; y < valuesMatrix.length; y++) {
 			/** x: les colonnes*/
 			for(int x = 1; x < valuesMatrix.length; x++) {
-				if(this.isXIncidentToY(x,y))
-					valuesMatrix[x][y] = "1 ";
+				valuesMatrix[x][y] = whatIsValue(x, y);
 			}
 		}
 		
@@ -234,6 +251,51 @@ public class Graphe {
 					System.out.print(matrix[i][j]);
 			}
 			System.out.println("");
+		}
+	}
+	
+	public boolean isArcNegativeValue() {
+		for(int i = 0; i < nbTrinome; i++) {
+			if( (arcs.get(i))[1] < 0)
+				return true;
+		}
+		return false;
+	}
+	
+	public int min(int a, int b) {
+		if(a <= b) return a;
+		return b;		
+	}
+	
+	public void bellman(int sommetDepart) {
+		
+	}
+	
+	public void dijkstra(int sommetDepart) {
+		
+	}
+	
+	public void calculateMinValuePaths() {
+		Scanner sc = new Scanner(System.in);
+		if(isArcNegativeValue()) {
+			 System.out.println("L'algorithme de Bellman sera exécuté.");
+			 System.out.println("Quel est le sommet de depart ?");
+			 int sommetDepart = sc.nextInt();
+			 bellman(sommetDepart);
+		}else {
+			System.out.println("Algorithme de Bellman ou Dijkstra ?");
+			System.out.println("1. Bellman");
+			System.out.println("2. Dijkstra");
+			int choix = sc.nextInt();
+			
+			System.out.println("Quel est le sommet de depart ?");
+			int sommetDepart = sc.nextInt();
+
+			if(choix == 1) {
+				bellman(sommetDepart);
+			}else if(choix == 2) {
+				dijkstra(sommetDepart);
+			}
 		}
 	}
 	
