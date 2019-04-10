@@ -48,14 +48,13 @@ public class testGraphes {
 			
 			Graphe graphe = new Graphe(numeroFichier);
 			
-			//System.out.println(graphe);
+			System.out.println(graphe);
 			
 			System.out.println("\nMatrice d'adjacence: (nombre de sommets: " + graphe.getNbSommets() + ")" );
 			graphe.printMatrix(graphe.createAdjacencyMatrix());
 			
 			System.out.println("\nMatrice des valeurs: (nombre de sommets: " + graphe.getNbSommets() + ")");
 			graphe.printMatrix(graphe.createValuesMatrix());
-			
 
 			/** Demander à l'utilisateur s'il veut continuer ou quitter */
 			String reponse = null;
