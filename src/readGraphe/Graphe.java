@@ -50,7 +50,7 @@ public class Graphe {
 			/** La premiere ligne contient le nombre de sommets*/
 			String value = inFile.nextLine();
 			
-			/** On enregistre ce nombre en entier, tout en Èvitant toute erreur innatendu*/
+			/** On enregistre ce nombre en entier, tout en ÔøΩvitant toute erreur innatendu*/
 			try {
 				this.nbSommets = Integer.parseInt(value);
 			} catch (NumberFormatException nfe) {
@@ -63,7 +63,7 @@ public class Graphe {
 			/** Permet de connaitre le nombre d'arc*/
 			nbTrinome = 0;
 
-			/** Lecture ‡ partir de la 2eme ligne jusque la fin*/
+			/** Lecture ÔøΩ partir de la 2eme ligne jusque la fin*/
 			while (inFile.hasNext()) {
 				nbTrinome++;
 				value = inFile.nextLine();
@@ -75,7 +75,7 @@ public class Graphe {
 				if(array.length == 3) {
 					arcs.add(arrayStringToInt(array));
 				}else {
-					System.out.println("Le fichier est incorrect, il n'y a pas les 3 elements dÈfinissant un arc..");
+					System.out.println("Le fichier est incorrect, il n'y a pas les 3 elements dÔøΩfinissant un arc..");
 				}
 			}
 			inFile.close();
@@ -268,21 +268,24 @@ public class Graphe {
 	}
 	
 	public void bellman(int sommetDepart) {
+		System.out.println("\n -----ALGORITHME DE BELLMAN-----");
 		
 	}
 	
 	public void dijkstra(int sommetDepart) {
-		
+		System.out.println("\n -----ALGORITHME DE DIJKSTRA-----");
 	}
 	
 	public void calculateMinValuePaths() {
 		Scanner sc = new Scanner(System.in);
 		if(isArcNegativeValue()) {
-			 System.out.println("L'algorithme de Bellman sera exÈcutÈ.");
-			 System.out.println("Quel est le sommet de depart ?");
-			 int sommetDepart = sc.nextInt();
-			 bellman(sommetDepart);
+			System.out.println("Il y a pr√©sence d‚Äôarc √† valeur n√©gative. \n");
+			System.out.println("-> L'algorithme de Bellman sera execute.");
+			System.out.println("Quel est le sommet de depart ?");
+			int sommetDepart = sc.nextInt();
+			bellman(sommetDepart);
 		}else {
+			System.out.println("Il n'y a pas de pr√©sence d‚Äôarc √† valeur n√©gative \n");
 			System.out.println("Algorithme de Bellman ou Dijkstra ?");
 			System.out.println("1. Bellman");
 			System.out.println("2. Dijkstra");
