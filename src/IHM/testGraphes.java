@@ -13,11 +13,11 @@ public class testGraphes {
 
 	/**
 	 * Algo:
-	 * début
-		tant que l’utilisateur veut tester un nouveau graphe faire §§
-			choisir le fichier texte par son numéro
-			lire le fichier correspondant et sauvegarder le graphe en mémoire
-			imprimer le graphe sous forme d’une matrice d’adjacence à partir de la mémoire et non pas lors de la lecture du fichier texte
+	 * dï¿½but
+		tant que lï¿½utilisateur veut tester un nouveau graphe faire ï¿½ï¿½
+			choisir le fichier texte par son numï¿½ro
+			lire le fichier correspondant et sauvegarder le graphe en mï¿½moire
+			imprimer le graphe sous forme dï¿½une matrice dï¿½adjacence ï¿½ partir de la mï¿½moire et non pas lors de la lecture du fichier texte
 			calculer les chemins de valeur minimale
 		 fait
 		fin
@@ -28,23 +28,23 @@ public class testGraphes {
 		boolean continuer = true;
 		
 		do {
-			/** Recuperer le numero de fichier afin d'ouvrir le graphe demandé */
-			System.out.println("Veuillez entrer le numero du fichier à charger:");
+			/** Recuperer le numero de fichier afin d'ouvrir le graphe demandï¿½ */
+			System.out.println("Veuillez entrer le numero du fichier a charger:");
 			Scanner sc = new Scanner(System.in);
 			
 			/** Verifier que l'utilisateur entre bien un nombre*/
 			boolean OK = false;
-			int numeroFichier = 1;
-//			while(!OK) {
-//				try {
-//					numeroFichier = sc.nextInt();
-//					OK = true;
-//				} catch (InputMismatchException e) {
-//					System.out.print("Entrée incorrecte, entrez un bon numero de fichier: ");
-//					sc.nextLine();
-//				}
-//			}
-//			sc.nextLine(); //clear buffer
+			int numeroFichier = 0;
+			while(!OK) {
+				try {
+					numeroFichier = sc.nextInt();
+					OK = true;
+				} catch (InputMismatchException e) {
+					System.out.print("Entree incorrecte, entrez un bon numero de fichier: ");
+					sc.nextLine();
+				}
+			}
+			sc.nextLine(); //clear buffer
 			
 			Graphe graphe = new Graphe(numeroFichier);
 			
@@ -55,8 +55,11 @@ public class testGraphes {
 			
 			System.out.println("\nMatrice des valeurs: (nombre de sommets: " + graphe.getNbSommets() + ")");
 			graphe.printMatrix(graphe.createValuesMatrix());
+			
+			System.out.println("\nCalcul des chemins de valeurs minimales: (nombre de sommets: " + graphe.getNbSommets() + ")");
+			graphe.calculateMinValuePaths();
 
-			/** Demander à l'utilisateur s'il veut continuer ou quitter */
+			/** Demander ï¿½ l'utilisateur s'il veut continuer ou quitter */
 			String reponse = null;
 
 			sc.nextLine();
