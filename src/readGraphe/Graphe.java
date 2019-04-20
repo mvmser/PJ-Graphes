@@ -277,46 +277,7 @@ public class Graphe {
 	public void bellman(int sommetDepart) {
 		System.out.println("\n -----ALGORITHME DE BELLMAN-----");
 	
-		  int sommet;
-		  int numero;
-		  int sommetMin;
-		  int min;
-		  PERE * adrPere;
-		  int unPere;
-		   
-		  for (sommet = 0; sommet < ordre; sommet++) 
-		    {
-		      antecedent[sommet] = -1;
-		      distance[sommet] = INFINI;
-		    }
-		  distance[depart] = 0;
-		  for (numero = num[depart] + 1; numero < ordre; numero++)
-		    {
-		      sommet = deNum[numero];
-		      min = INFINI;
-		      adrPere = graphe[sommet];
-		      while(adrPere != NULL)
-			{
-			  unPere = adrPere->nomPere;
-			  if ((distance[unPere] != INFINI) && 
-			      (distance[unPere] + adrPere->longueur < min))
-			    {
-			      min = distance[unPere] + adrPere->longueur;
-			      sommetMin  = unPere;
-			    }
-			  adrPere = adrPere->suivant;
-			}
-		      if (min < INFINI)
-			{
-			  distance[sommet] = min;
-			  antecedent[sommet] = sommetMin;
-			}
-		    } 
-		  free(deNum);
-		  /* Les deux instructions qui suivent ne sont utiles que 
-		     pour la période de tests */
-		  printf("Voici les antecedents trouves\n");
-		  ecrireValeurs(antecedent);
+		  
 		
 	}
 	
