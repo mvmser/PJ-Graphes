@@ -59,9 +59,15 @@ public class testGraphes {
 			/** Demander à l'utilisateur s'il veut continuer ou quitter */
 			String reponse = null;
 
+			sc.nextLine();
+			
 			System.out.println("Voulez-vous quitter ? > exit");
 			reponse = sc.nextLine();
-			if(reponse != "exit") continuer = false; 
+			if(reponse == "exit") {
+				continuer = false; 
+			} else {
+				sc.nextLine(); //clear buffer
+			}
 	
 		}while(continuer);
 
