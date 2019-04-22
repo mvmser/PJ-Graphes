@@ -9,7 +9,7 @@ public class Node {
 		
 	}
 	
-	public Node(int _dist, int _vertex) {
+	public Node(int _vertex, int _dist) {
 		this.vertex = _vertex;
 		this.distance = _dist;
 	}

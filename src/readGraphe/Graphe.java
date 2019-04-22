@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 /**
@@ -21,9 +23,11 @@ public class Graphe {
 	/** Attribut contenant tous les arcs */
 	private ArrayList<int[]> arcs = new ArrayList<int[]>();
 	
-	private ArrayList<Node> currentMinWeight = new ArrayList<Node>();
+	private ArrayList<Node> currentMinWeight = new ArrayList<Node>(); //plus besoin
 	private ArrayList<Node[]> currentMinWeights = new ArrayList<Node[]>();//a revoir 
 	private ArrayList<String[]> bellmanArray = new ArrayList<String[]>();
+	
+	private HashMap<Integer, Node> nodesHashMap= new HashMap<Integer, Node>();
 	
 	/**
 	 * Constructeur du Graphe
@@ -327,11 +331,11 @@ public class Graphe {
 	 * @param vertices
 	 * @return tableau de successeurs
 	 */
-	public ArrayList<Integer> successorsOf(int initialEnd){
+	public ArrayList<Integer> successorsOf(int vertex){
 		ArrayList<Integer> successorsArray = new ArrayList<Integer>();
 		
 		for(int i = 0; i < this.arcs.size(); i++) {
-			if( (this.arcs.get(i))[0] == initialEnd) {
+			if( (this.arcs.get(i))[0] == vertex) {
 				successorsArray.add((this.arcs.get(i))[2]);
 			}	
 		}
@@ -342,19 +346,49 @@ public class Graphe {
 		return successorsArray;
 	}
 	
+	public ArrayList<Integer> predeccessorOf(int vertex){
+		ArrayList<Integer> predeccessorsArray = new ArrayList<Integer>();
+		
+		for(int i = 0; i < this.arcs.size(); i++) {
+			if( (this.arcs.get(i))[2] == vertex) {
+				predeccessorsArray.add((this.arcs.get(i))[0]);
+			}	
+		}
+		
+		if(predeccessorsArray.size() == 0) predeccessorsArray.add(vertex);
+		
+		/** On trie par ordre croissant*/
+		Collections.sort(predeccessorsArray);
+		
+		return predeccessorsArray;
+	}
+	
 	/**
 	 * Permet d'afficher les successeurs d'un sommet
-	 * @param initialEnd
+	 * @param vertex
 	 */
-	public void printSuccessorsOf(int initialEnd) {
-		ArrayList<Integer> successorsArray =  successorsOf(initialEnd);
+	public void printSuccessorsOf(int vertex) {
+		ArrayList<Integer> successorsArray =  successorsOf(vertex);
 		
-		System.out.print("Successeurs de " + initialEnd + ": ");
+		System.out.print("Successeurs de " + vertex + ": ");
 		for(int i = 0; i < successorsArray.size(); i++) {
 			if(i < successorsArray.size() - 1)
 				System.out.print(successorsArray.get(i) + ", ");
 			else
 				System.out.println(successorsArray.get(i));
+		}
+
+	}
+	
+	public void printPredeccessorsOf(int vertex) {
+		ArrayList<Integer> predeccessorArray =  predeccessorOf(vertex);
+		
+		System.out.print("Predeccesseurs de " + vertex + ": ");
+		for(int i = 0; i < predeccessorArray.size(); i++) {
+			if(i < predeccessorArray.size() - 1)
+				System.out.print(predeccessorArray.get(i) + ", ");
+			else
+				System.out.println(predeccessorArray.get(i));
 		}
 
 	}
@@ -387,8 +421,8 @@ public class Graphe {
 		}
 	}
 	
-	public void printCurrentMinWeight () {
-		System.out.println(currentMinWeight);
+	public void printNodeHashMap () {
+		System.out.println(nodesHashMap);
 	}
 	
 	/**
@@ -404,7 +438,7 @@ public class Graphe {
 		fillArray(initialEnd, k);
 	}
 	
-	public void initBellman() {
+	public void initBellman(int startVertex) {
 		/** Creation et initilisation du header*/
 		/** l'entete contient la premiere case + les sommets*/
 		String[] header = new String[nbSommets + 1]; 
@@ -412,7 +446,17 @@ public class Graphe {
 		for(int i = 0; i < nbSommets; i++) {
 			header[i + 1] = "  " + Integer.toString(i) + "  ";
 		}
-		bellmanArray.add(header);		
+		bellmanArray.add(header);	
+		
+		/** Initialisation..*/
+		for(int i = 0; i < nbSommets; i++) {
+			if(i == startVertex) {
+				nodesHashMap.put(i, new Node(i, 0));
+			}else {
+				nodesHashMap.put(i, new Node(i, Integer.MAX_VALUE));
+			}
+			
+		}	
 	}
 	
 	//public void met(successeurdesommet)
@@ -425,80 +469,61 @@ public class Graphe {
 	public void bellman(int startVertex) {
 		System.out.println("\n -----ALGORITHME DE BELLMAN-----");
 		
-		/** Permet d'initiliser l'entete*/
-		initBellman();
+		/** Permet d'initiliser*/
+		initBellman(startVertex);		
 		
-		
-		/** Initialisation de l'algorithme */
 		int k = 1;
+		boolean stop = false;
+		//int predecessor;
 		
-		//tmpLine : ligne en court ui sera rajoutée au fur et a mesure à bellmanArray
-		String[] tmpLine = new String[nbSommets + 1];
-		tmpLine[0] = " k=" + Integer.toString(k) + " ";
-		Node tmpNode = new Node(); 
-		startVertex = 0;
-		
-		for(int i = 0; i < nbSommets; i++) {
-			if(i == startVertex) {
-				tmpNode.setDistance(0);
-				tmpNode.setVertex(i);
-				currentMinWeight.add(tmpNode);
-				tmpNode = new Node();
-			}else {
-				tmpNode.setDistance(Integer.MAX_VALUE);
-				tmpNode.setVertex(i);
-				currentMinWeight.add(tmpNode);
-				tmpNode = new Node();
-			}
-		}	
-		printCurrentMinWeight();
-
-		/** reste modifier les successeurs.. */
-		int tmpInt = Integer.MAX_VALUE;
-		//int tmpFinal;
-		Node tmpMinNode = new Node();
-		for (Node node : currentMinWeight) {
-			for(int successor : successorsOf(startVertex)) {
-				if(successor == node.getVertex()) {
-					System.out.println("node " + successor + " poids: "+ whatIsEdgeWeight(startVertex, successor));
-					if(whatIsEdgeWeight(startVertex, successor) < node.getDistance()) {
-						System.out.println(whatIsEdgeWeight(startVertex, successor));
-						node.setDistance(whatIsEdgeWeight(startVertex, successor));
-//						tmpInt = whatIsEdgeWeight(startVertex, i);
-//						//tmpFinal = node.getInitialEnd();
-//						tmpMinNode.setVertex(node.getVertex());
-//						tmpMinNode.setDistance(whatIsEdgeWeight(startVertex, i));
-					}
-				}
-			}
-		}
-		printCurrentMinWeight();
-		
-		/** Quand on a fini tous les calul, on enregistre le tout en string pour l'afficher*/
-		for (int i = 1; i < tmpLine.length; i++) {
-			tmpLine[i] = currentMinWeight.get(i - 1).toString();
-		}
-		//System.out.println(tmpMinNode.getInitialEnd());
-		if(tmpMinNode.getVertex() != 0)
-			tmpLine[tmpMinNode.getVertex()] = tmpMinNode.toString();
-		
-		bellmanArray.add(tmpLine);
-		
-		/** a faire ligne suivante*/
-//		tmpLine = new String[nbSommets + 1];
-//		bellmanArray.add(tmpLine);
-//
-//		/** Début de l'algorithme*/
-//		printSuccessorsOf(startVertex);
-//		for(int successor : successorsOf(startVertex)) {
-//			System.out.println(whatIsEdgeWeight(startVertex, successor));
-//		}
+		ArrayList <Integer> predecessors = new ArrayList<>();
+		predecessors.add(startVertex); 
 //		
-//		String[] line = new String[nbSommets + 1]; 
-//		line[0] = " k=" + k + " ";
-//		for(int i = 0; i < nbSommets; i++) {
-//			line[i + 1] = " " + Integer.toString(i) + " ";
-//		}
+		ArrayList <Integer> actualVertices = new ArrayList<>();
+		ArrayList <Integer> nextVertices = new ArrayList<>();
+
+		actualVertices.add(startVertex);
+//		
+		do {
+			String[] tmpLine = new String[nbSommets + 1];
+			tmpLine[0] = " k=" + Integer.toString(k) + " ";
+			
+			for (int actualVertex : actualVertices) {
+				for (int successor : successorsOf(actualVertex)) {
+					nodesHashMap.get(successor).setVertex(actualVertex);
+					nodesHashMap.get(successor).setDistance(min(whatIsEdgeWeight(actualVertex, successor), nodesHashMap.get(successor).getDistance()));
+					nextVertices.add(successor);
+				}
+			}		
+		
+			System.out.println(actualVertices);
+			actualVertices.clear();
+			for (int nextVertex : nextVertices) {
+				actualVertices.add(nextVertex);
+			}
+			nextVertices.clear();
+			
+//			for (int predecessor : predecessors) {
+//				for (int successor : successorsOf(predecessor)) {
+//						nodesHashMap.get(successor).setVertex(predecessor);
+//						nodesHashMap.get(successor).setDistance(min(whatIsEdgeWeight(predecessor, successor), nodesHashMap.get(successor).getDistance()));;
+//						printPredeccessorsOf(vertex);
+//						printPredeccessorsOf(vertex);
+//				}
+//			}
+			
+			/** Quand on a fini tous les calul, on enregistre le tout en string pour l'afficher*/
+			for (int i = 1; i < tmpLine.length; i++) {
+				tmpLine[i] = nodesHashMap.get(i - 1).toString();
+			}
+
+			bellmanArray.add(tmpLine);
+			printSuccessorsOf(startVertex);
+			printNodeHashMap();
+
+			if(k == 4) stop = true;
+			k++;
+		}while(!stop);
 	}
 	
 	public void dijkstra(int initialEnd) {
@@ -507,7 +532,7 @@ public class Graphe {
 	}
 	
 	public void calculateMinValuePaths() {
-		Scanner sc = new Scanner(System.in);
+		//Scanner sc = new Scanner(System.in);
 		
 		bellman(0);
 		printBellmanArray();
