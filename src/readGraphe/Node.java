@@ -36,7 +36,6 @@ public class Node {
 			return " inf ";
 		}else {
 			return " " + Integer.toString(this.distance) + "(" + Integer.toString(this.vertex) + ")";
-
 		}
 	}
 

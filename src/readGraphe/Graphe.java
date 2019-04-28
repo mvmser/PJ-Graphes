@@ -21,10 +21,10 @@ public class Graphe {
 	int nbArc;
 	
 	/** Attribut contenant tous les arcs */
-	private ArrayList<int[]> arcs = new ArrayList<int[]>();
+	private ArrayList<Edge> edges = new ArrayList<Edge>();
 	
-	private ArrayList<Node> currentMinWeight = new ArrayList<Node>(); //plus besoin
-	private ArrayList<Node[]> currentMinWeights = new ArrayList<Node[]>();//a revoir 
+	//private ArrayList<Node> currentMinWeight = new ArrayList<Node>(); //plus besoin
+	//private ArrayList<Node[]> currentMinWeights = new ArrayList<Node[]>();//a revoir 
 	private ArrayList<String[]> bellmanArray = new ArrayList<String[]>();
 	
 	private HashMap<Integer, Node> nodesHashMap= new HashMap<Integer, Node>();
@@ -88,9 +88,6 @@ public class Graphe {
 				System.out.println("NumberFormatException: " + nfe.getMessage());
 			}
 			
-			/** ArrayList pour stocker temporairement un arc*/
-			//ArrayList<Integer> tmpArc = new ArrayList<Integer>();
-			
 			/** Permet de connaitre le nombre d'arc*/
 			nbArc = 0;
 
@@ -104,7 +101,8 @@ public class Graphe {
 				
 				/** On enregistre les valeurs de l'arc dans une ArrayList (apres les avoir converti en entier)*/	
 				if(array.length == 3) {
-					arcs.add(arrayStringToInt(array));
+					/** On cree notre arc grace à ces valeurs*/
+					edges.add(new Edge(arrayStringToInt(array)[0], arrayStringToInt(array)[1], arrayStringToInt(array)[2]));
 				}else {
 					System.out.println("Le fichier est incorrect, il n'y a pas les 3 elements dï¿½finissant un arc..");
 				}
@@ -198,7 +196,7 @@ public class Graphe {
 	 */
 	public boolean isXIncidentToY(int x, int y) {
 		for(int i = 0; i < nbArc; i++) {
-			if( (arcs.get(i))[0] == x - 1 && (arcs.get(i))[2] == y - 1)
+			if( edges.get(i).getInitialEnd() == x - 1 && edges.get(i).getFinalEnd() == y - 1)
 				return true;
 		}
 
@@ -235,8 +233,8 @@ public class Graphe {
 	public String whatIsValue(int x, int y) {
 		
 		for(int i = 0; i < nbArc; i++) {
-			if( (arcs.get(i))[0] == x - 1 && (arcs.get(i))[2] == y - 1)
-				return String.format(" %2d", (arcs.get(i))[1]);
+			if( edges.get(i).getInitialEnd() == x - 1 && edges.get(i).getFinalEnd() == y - 1)
+				return String.format(" %2d", edges.get(i).getEdgeWeight());
 		}
 		return "  -";
 	}
@@ -296,7 +294,7 @@ public class Graphe {
 	 */
 	public boolean isArcNegativeValue() {
 		for(int i = 0; i < nbArc; i++) {
-			if( (this.arcs.get(i))[1] < 0)
+			if( edges.get(i).getEdgeWeight() < 0)
 				return true;
 		}
 		return false;
@@ -334,9 +332,9 @@ public class Graphe {
 	public ArrayList<Integer> successorsOf(int vertex){
 		ArrayList<Integer> successorsArray = new ArrayList<Integer>();
 		
-		for(int i = 0; i < this.arcs.size(); i++) {
-			if( (this.arcs.get(i))[0] == vertex) {
-				successorsArray.add((this.arcs.get(i))[2]);
+		for(int i = 0; i < this.edges.size(); i++) {
+			if( edges.get(i).getInitialEnd() == vertex) {
+				successorsArray.add(edges.get(i).getFinalEnd());
 			}	
 		}
 		
@@ -349,9 +347,9 @@ public class Graphe {
 	public ArrayList<Integer> predeccessorOf(int vertex){
 		ArrayList<Integer> predeccessorsArray = new ArrayList<Integer>();
 		
-		for(int i = 0; i < this.arcs.size(); i++) {
-			if( (this.arcs.get(i))[2] == vertex) {
-				predeccessorsArray.add((this.arcs.get(i))[0]);
+		for(int i = 0; i < this.edges.size(); i++) {
+			if( edges.get(i).getFinalEnd() == vertex) {
+				predeccessorsArray.add(edges.get(i).getInitialEnd());
 			}	
 		}
 		
@@ -401,9 +399,9 @@ public class Graphe {
 	 */
 	public int whatIsEdgeWeight(int initialEnd, int finalEnd) {	
 		int edgeWeight = Integer.MAX_VALUE;
-		for(int[] arc : arcs) {
-			if(arc[0] == initialEnd && arc[2] == finalEnd)
-				edgeWeight =  arc[1];
+		for(Edge arc : edges) {
+			if(arc.getInitialEnd() == initialEnd && arc.getFinalEnd() == finalEnd)
+				edgeWeight =  arc.getEdgeWeight();
 		}
 		return edgeWeight;
 	}
@@ -564,12 +562,8 @@ public class Graphe {
 	public String toString() {
 		String tmp = "";
 		
-		for(int i = 0; i < nbArc; i++) {
-			tmp += "[";
-			for(int j = 0; j < 3; j++) {
-				tmp += Integer.toString( (arcs.get(i))[j]) + " ";
-			}
-			tmp += "] \n";
+		for (Edge edge : edges) {
+			tmp += "" + edge + "\n";
 		}
 		return tmp;
 	}
