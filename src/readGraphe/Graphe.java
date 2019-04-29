@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.Scanner;
 
 /**
@@ -22,12 +21,13 @@ public class Graphe {
 	
 	/** Attribut contenant tous les arcs */
 	private ArrayList<Edge> edges = new ArrayList<Edge>();
-	
-	//private ArrayList<Node> currentMinWeight = new ArrayList<Node>(); //plus besoin
-	//private ArrayList<Node[]> currentMinWeights = new ArrayList<Node[]>();//a revoir 
+
 	private ArrayList<String[]> bellmanArray = new ArrayList<String[]>();
-	
 	private HashMap<Integer, Node> nodesHashMap= new HashMap<Integer, Node>();
+	
+	private final int INFINITY = Integer.MAX_VALUE;
+	
+	private static ArrayList<Integer> filesNames = new ArrayList<Integer>();
 	
 	/**
 	 * Constructeur du Graphe
@@ -53,6 +53,25 @@ public class Graphe {
 		return nbArc;
 	}
 	
+	/**
+	 * Permet de connaitre tous les fichiers présent dans le dossier files
+	 * @return
+	 */
+	public static ArrayList<Integer> lookFiles() {
+		File repertoire = new File(RESOURCES_PATH);
+		File[] files = repertoire.listFiles();
+		String fileName;
+		for (File file : files) {
+			fileName = (file.getName() != null) ? file.getName().substring(0,file.getName().indexOf('.')) : "";
+			try {
+				filesNames.add(Integer.parseInt(fileName.substring(6)));
+			}catch (NumberFormatException  e) {
+				System.out.println("Pb dans le nom du fichier.. IL FAUT SUIVRE: L3-B2-NUMERO.txt");
+			}
+		}
+		Collections.sort(filesNames);
+		return filesNames;
+	}
 	/**
 	 * Permet de savoir si le fichier existe ou non
 	 * @param fileNumber
@@ -225,7 +244,7 @@ public class Graphe {
 	}
 	
 	/**
-	 * 
+	 * Permet de connaitre la valeur entre 2 sommets x->y
 	 * @param x
 	 * @param y
 	 * @return
@@ -233,14 +252,15 @@ public class Graphe {
 	public String whatIsValue(int x, int y) {
 		
 		for(int i = 0; i < nbArc; i++) {
-			if( edges.get(i).getInitialEnd() == x - 1 && edges.get(i).getFinalEnd() == y - 1)
+			if( edges.get(i).getInitialEnd() == x  && edges.get(i).getFinalEnd() == y )
 				return String.format(" %2d", edges.get(i).getEdgeWeight());
 		}
 		return "  -";
 	}
 	
 	/**
-	 * @return
+	 * Permet de creer la matrice des valeures
+	 * @return Tableau 2D contenant les valeur en chaine de caracteres
 	 */
 	public String[][] createValuesMatrix(){
 		String[][] valuesMatrix = new String[this.nbSommets + 1][this.nbSommets + 1];
@@ -251,7 +271,7 @@ public class Graphe {
 		for(int y = 1; y < valuesMatrix.length; y++) {
 			/** x: les colonnes*/
 			for(int x = 1; x < valuesMatrix.length; x++) {
-				valuesMatrix[x][y] = whatIsValue(x, y);
+				valuesMatrix[x][y] = whatIsValue(x-1, y-1);
 			}
 		}
 		
@@ -313,7 +333,7 @@ public class Graphe {
 	
 	/**
 	 * Permet de connaitre la valeur minimal entre 1 entier et un double 
-	 * (dans le cas ou la valeur est inifinie)
+	 * (dans le cas ou la valeur est Double.Infinity)
 	 * @param a
 	 * @param b
 	 * @return l'entier minimal
@@ -326,7 +346,7 @@ public class Graphe {
 	
 	/**
 	 * Permet de retourner le ou les successeurs d'un sommet 
-	 * @param vertices
+	 * @param un sommet
 	 * @return tableau de successeurs
 	 */
 	public ArrayList<Integer> successorsOf(int vertex){
@@ -344,6 +364,11 @@ public class Graphe {
 		return successorsArray;
 	}
 	
+	/**
+	 * Permet de connaitre le ou les predeccesseurs d'un sommet donné
+	 * @param un sommet
+	 * @return tableau de predeccesseurs
+	 */
 	public ArrayList<Integer> predeccessorOf(int vertex){
 		ArrayList<Integer> predeccessorsArray = new ArrayList<Integer>();
 		
@@ -363,21 +388,28 @@ public class Graphe {
 	
 	/**
 	 * Permet d'afficher les successeurs d'un sommet
-	 * @param vertex
+	 * @param un sommet
 	 */
 	public void printSuccessorsOf(int vertex) {
 		ArrayList<Integer> successorsArray =  successorsOf(vertex);
 		
 		System.out.print("Successeurs de " + vertex + ": ");
+		if(successorsArray.size() == 0)
+			System.out.print("/");
 		for(int i = 0; i < successorsArray.size(); i++) {
 			if(i < successorsArray.size() - 1)
 				System.out.print(successorsArray.get(i) + ", ");
 			else
-				System.out.println(successorsArray.get(i));
+				System.out.print(successorsArray.get(i));
 		}
+		System.out.println("");
 
 	}
 	
+	/**
+	 * Permer d'afficher le ou les predecesseurs d'un sommet
+	 * @param un sommet
+	 */
 	public void printPredeccessorsOf(int vertex) {
 		ArrayList<Integer> predeccessorArray =  predeccessorOf(vertex);
 		
@@ -390,6 +422,7 @@ public class Graphe {
 		}
 
 	}
+	
 	/**
 	 * Permet de connaitre la valeur entre 2 arc
 	 * utilisé uniquement entre un sommet et son successeur
@@ -436,6 +469,10 @@ public class Graphe {
 		fillArray(initialEnd, k);
 	}
 	
+	/**
+	 * Permet d'initialiser le belman avec un sommet de depart
+	 * @param un sommet de depart
+	 */
 	public void initBellman(int startVertex) {
 		/** Creation et initilisation du header*/
 		/** l'entete contient la premiere case + les sommets*/
@@ -459,6 +496,9 @@ public class Graphe {
 	
 	//public void met(successeurdesommet)
 	
+	public ArrayList<String[]> getBellmanArray(){
+		return bellmanArray;
+	}
 	/**
 	 * Algorithme de Bellman
 	 * en cours: header
@@ -470,7 +510,6 @@ public class Graphe {
 		/** Permet d'initiliser*/
 		initBellman(startVertex);		
 		
-		int k = 1;
 		boolean stop = false;
 		//int predecessor;
 		
@@ -481,34 +520,52 @@ public class Graphe {
 		ArrayList <Integer> nextVertices = new ArrayList<>();
 
 		actualVertices.add(startVertex);
-//		
+		int actualDistance = 0;
+		
+		String[] initLine = new String[nbSommets + 1];
+		initLine[0] = " k=0 ";
+		/** Quand on a fini tous les calul, on enregistre le tout en string pour l'afficher*/
+		for (int i = 1; i < initLine.length; i++) {
+			initLine[i] = nodesHashMap.get(i - 1).toString();
+		}
+
+		bellmanArray.add(initLine);
+		
+		int k = 1;
 		do {
+			//debug
+			System.out.print("k=" + k);
+			//
+			
 			String[] tmpLine = new String[nbSommets + 1];
 			tmpLine[0] = " k=" + Integer.toString(k) + " ";
 			
 			for (int actualVertex : actualVertices) {
-				for (int successor : successorsOf(actualVertex)) {
+				//debug
+				System.out.print(" Sommet en cours: " + actualVertex);
+				//
+				for (int successor : successorsOf(actualVertex)) {						
 					nodesHashMap.get(successor).setVertex(actualVertex);
-					nodesHashMap.get(successor).setDistance(min(whatIsEdgeWeight(actualVertex, successor), nodesHashMap.get(successor).getDistance()));
+					
+					if(nodesHashMap.get(actualVertex).getDistance() != INFINITY)
+						actualDistance = nodesHashMap.get(actualVertex).getDistance();
+					else
+						actualDistance = 0;
+					
+					nodesHashMap.get(successor).setDistance(actualDistance + min(whatIsEdgeWeight(actualVertex, successor), nodesHashMap.get(successor).getDistance()));
 					nextVertices.add(successor);
+					
 				}
+				//debug
+				printSuccessorsOf(actualVertex);
+
 			}		
-		
-			System.out.println(actualVertices);
+			//System.out.println(actualVertices);
 			actualVertices.clear();
 			for (int nextVertex : nextVertices) {
 				actualVertices.add(nextVertex);
 			}
 			nextVertices.clear();
-			
-//			for (int predecessor : predecessors) {
-//				for (int successor : successorsOf(predecessor)) {
-//						nodesHashMap.get(successor).setVertex(predecessor);
-//						nodesHashMap.get(successor).setDistance(min(whatIsEdgeWeight(predecessor, successor), nodesHashMap.get(successor).getDistance()));;
-//						printPredeccessorsOf(vertex);
-//						printPredeccessorsOf(vertex);
-//				}
-//			}
 			
 			/** Quand on a fini tous les calul, on enregistre le tout en string pour l'afficher*/
 			for (int i = 1; i < tmpLine.length; i++) {
@@ -516,10 +573,9 @@ public class Graphe {
 			}
 
 			bellmanArray.add(tmpLine);
-			printSuccessorsOf(startVertex);
-			printNodeHashMap();
+			//printNodeHashMap();
 
-			if(k == 4) stop = true;
+			if(k == 5) stop = true;
 			k++;
 		}while(!stop);
 	}

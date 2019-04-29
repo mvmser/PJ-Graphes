@@ -9,8 +9,7 @@ import readGraphe.Graphe;
  * @version 1.0
  *
  */
-public class testGraphes {
-
+public class testGraphes {	
 	/**
 	 * Algo:
 	 * début
@@ -26,11 +25,12 @@ public class testGraphes {
 	 */
 	public static void main(String[] args) {	   
 		boolean continuer = true;
+		Scanner sc = new Scanner(System.in);
 		
 		do {
 			/** Recuperer le numero de fichier afin d'ouvrir le graphe demandé */
 			System.out.print("Veuillez entrer le numero du fichier à charger: ");
-			Scanner sc = new Scanner(System.in);
+			
 			
 			/** Verifier que l'utilisateur entre bien un nombre*/
 			boolean OK = false;
@@ -74,6 +74,7 @@ public class testGraphes {
 		}while(continuer);
 		
 		System.out.println("Bye!");
+		sc.close();
 	}
 
 }

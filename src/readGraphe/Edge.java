@@ -5,7 +5,6 @@ public class Edge {
 	private int initialEnd;
 	private int edgeWeight ;
 	private int finalEnd;
-	  
 	
 	public Edge(int initialEnd, int edgeWeight, int finalEnd) {
 		this.initialEnd = initialEnd;
