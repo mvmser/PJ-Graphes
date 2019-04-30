@@ -3,8 +3,10 @@ package readGraphe;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -23,9 +25,12 @@ public class Graphe {
 	private ArrayList<Edge> edges = new ArrayList<Edge>();
 
 	private ArrayList<String[]> bellmanArray = new ArrayList<String[]>();
+	private ArrayList<String[]> dijkstraArray = new ArrayList<String[]>();
+
 	private HashMap<Integer, Node> nodesHashMap= new HashMap<Integer, Node>();
 	
 	private final int INFINITY = Integer.MAX_VALUE;
+	private final int NO_PRED = -1;
 	
 	private static ArrayList<Integer> filesNames = new ArrayList<Integer>();
 	
@@ -441,10 +446,21 @@ public class Graphe {
 	
 	/**
 	 * Permet d'afficher le tableau issu de l'algorithme de bellman
-	 * @param bellmanArray
 	 */
 	public void printBellmanArray() {
 		for(String[] line : bellmanArray) {
+			for (int i = 0; i < line.length; i++) {
+				System.out.print(line[i]);
+			}
+			System.out.println("");
+		}
+	}
+	
+	/**
+	 * Permet d'afficher le tableau issu de l'algorithme de Dijkstra
+	 */
+	public void printDijkstraArray() {
+		for(String[] line : dijkstraArray) {
 			for (int i = 0; i < line.length; i++) {
 				System.out.print(line[i]);
 			}
@@ -473,6 +489,31 @@ public class Graphe {
 	 * Permet d'initialiser le belman avec un sommet de depart
 	 * @param un sommet de depart
 	 */
+	public void initDijkstra(int startVertex) {
+		/** Creation et initilisation du header*/
+		/** l'entete contient la premiere case + les sommets*/
+		String[] header = new String[nbSommets + 1]; 
+		header[0] = " CC  ";
+		for(int i = 0; i < nbSommets; i++) {
+			header[i + 1] = "  " + Integer.toString(i) + "  ";
+		}
+		bellmanArray.add(header);	
+		
+		/** Initialisation..*/
+		for(int i = 0; i < nbSommets; i++) {
+			if(i == startVertex) {
+				nodesHashMap.put(i, new Node(i, 0));
+			}else {
+				nodesHashMap.put(i, new Node(i, INFINITY));
+			}
+			
+		}	
+	}
+	
+	/**
+	 * Permet d'initialiser le belman avec un sommet de depart
+	 * @param un sommet de depart
+	 */
 	public void initBellman(int startVertex) {
 		/** Creation et initilisation du header*/
 		/** l'entete contient la premiere case + les sommets*/
@@ -488,7 +529,7 @@ public class Graphe {
 			if(i == startVertex) {
 				nodesHashMap.put(i, new Node(i, 0));
 			}else {
-				nodesHashMap.put(i, new Node(i, Integer.MAX_VALUE));
+				nodesHashMap.put(i, new Node(i, INFINITY));
 			}
 			
 		}	
@@ -499,12 +540,100 @@ public class Graphe {
 	public ArrayList<String[]> getBellmanArray(){
 		return bellmanArray;
 	}
+	
+	private List<Integer> adjacency(Integer[][] G, int v) {
+	    List<Integer> result = new ArrayList<Integer>();
+	    for (int x = 0; x < G.length; x++) {
+	      if (G[v][x] != null) {
+	        result.add(x);
+	      }
+	    }
+	    return result;
+  	}
+	  
+	public void bellman(int startVertex) {
+		Integer[][] edgeWeight = new Integer[nbArc][nbArc];
+		for (Edge edge : edges) {
+			edgeWeight[edge.getInitialEnd()][edge.getFinalEnd()] = edge.getEdgeWeight();
+		}
+		
+		Integer[] pred = new Integer[nbSommets];
+		Integer[] minDist = new Integer[nbSommets];
+		Integer[] tmpMinDist = new Integer[nbSommets];
+		Integer[] tmp2MinDist = new Integer[nbSommets];
+		
+		Arrays.fill(pred, NO_PRED);
+		
+		//init V0 à +inf
+	    Arrays.fill(minDist, INFINITY);
+	    //V0[source] = 0
+	    minDist[startVertex] = 0;
+	    pred[startVertex] = startVertex;
+	    
+	    int k = 0;
+	    
+	    
+//	    ArrayList<Integer> tmp = new ArrayList<Integer>();
+//	    for (int y = 0; y < minDist.length ; y++) {
+//	    	k++;
+//	    	System.out.println(k);
+//	    	if(y != startVertex) {
+//	    		for (int x : predeccessorOf(y)) {
+//	    			System.out.println("pred: " + x);
+//	    			if(minDist[x] == INFINITY)
+//	    				tmp.add(INFINITY);
+//	    			else
+//	    				tmp.add(minDist[x] + whatIsEdgeWeight(x, y));
+//	    			//System.out.println("tmp:" + tmp);
+//	    			System.out.println("edge" + whatIsEdgeWeight(x, y));
+//	    			System.out.println("mijn:" + minDist[x]);
+//	    		}
+//	    		if(tmp.size() > 0) {
+//	    			Collections.sort(tmp);
+//	    			System.out.println("tmp:" + tmp);
+//		    		minDist[y] = min(minDist[y], tmp.get(0));
+//		    		System.out.println("mijnafter:" + tmp.get(0));
+//	    		}
+//	    		tmp.clear();
+//	    	}
+//	    }
+	    
+	    for (int i = 0; i < minDist.length ; i++) {
+		      for (int v = 0; v < nbSommets; v++) {
+		        for (int x : adjacency(edgeWeight, v)) {
+		          if (minDist[x] > minDist[v] + edgeWeight[v][x]) {
+		            minDist[x] = minDist[v] + edgeWeight[v][x];
+		            pred[x] = v;
+		          }
+		        }
+		      }
+		    }
+	    
+	  //cycles negatifs
+	    for (int v = 0; v < nbArc; v++) {
+	      for (int x : adjacency(edgeWeight, v)) {
+	        if (minDist[x] > minDist[v] + edgeWeight[v][x]) {
+	          System.out.println("Negative cycle found");
+	        }
+	      }
+	    }
+	    
+	    Integer[][] result = {pred, minDist};
+
+	    for (int i = 0; i < result.length; i++) {
+			for (int j = 0; j < minDist.length ; j++) {
+				System.out.print(result[i][j] + " ");
+			}
+			System.out.println("");
+		}
+	}
+	
 	/**
 	 * Algorithme de Bellman
-	 * en cours: header
+	 * @deprecated ancienne version..
 	 * @param sommetDepart
 	 */
-	public void bellman(int startVertex) {
+	public void oldBellman(int startVertex) {
 		System.out.println("\n -----ALGORITHME DE BELLMAN-----");
 		
 		/** Permet d'initiliser*/
@@ -590,6 +719,7 @@ public class Graphe {
 		
 		bellman(0);
 		printBellmanArray();
+		
 //		if(isArcNegativeValue()) {
 //			System.out.println("Il y a presence d'au moins un arc a valeur negative. \n");
 //			System.out.println("-> L'algorithme de Bellman sera execute.");
