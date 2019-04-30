@@ -533,6 +533,15 @@ public class Graphe {
 			}
 			
 		}	
+		
+		String[] initLine = new String[nbSommets + 1];
+		initLine[0] = " k=0 ";
+		/** Quand on a fini tous les calul, on enregistre le tout en string pour l'afficher*/
+		for (int i = 1; i < initLine.length; i++) {
+			initLine[i] = nodesHashMap.get(i - 1).toString();
+		}
+
+		bellmanArray.add(initLine);
 	}
 	
 	//public void met(successeurdesommet)
@@ -553,63 +562,45 @@ public class Graphe {
 	  
 	public void bellman(int startVertex) {
 		Integer[][] edgeWeight = new Integer[nbArc][nbArc];
+		initBellman(startVertex);
+		
 		for (Edge edge : edges) {
 			edgeWeight[edge.getInitialEnd()][edge.getFinalEnd()] = edge.getEdgeWeight();
 		}
 		
-		Integer[] pred = new Integer[nbSommets];
+		Integer[] predecesseur = new Integer[nbSommets];
 		Integer[] minDist = new Integer[nbSommets];
-		Integer[] tmpMinDist = new Integer[nbSommets];
-		Integer[] tmp2MinDist = new Integer[nbSommets];
 		
-		Arrays.fill(pred, NO_PRED);
+		Arrays.fill(predecesseur, NO_PRED);
 		
 		//init V0 à +inf
 	    Arrays.fill(minDist, INFINITY);
 	    //V0[source] = 0
 	    minDist[startVertex] = 0;
-	    pred[startVertex] = startVertex;
+	    predecesseur[startVertex] = startVertex;
 	    
+	    String[] tmpLine = new String[nbSommets + 1];
 	    int k = 0;
 	    
-	    
-//	    ArrayList<Integer> tmp = new ArrayList<Integer>();
-//	    for (int y = 0; y < minDist.length ; y++) {
-//	    	k++;
-//	    	System.out.println(k);
-//	    	if(y != startVertex) {
-//	    		for (int x : predeccessorOf(y)) {
-//	    			System.out.println("pred: " + x);
-//	    			if(minDist[x] == INFINITY)
-//	    				tmp.add(INFINITY);
-//	    			else
-//	    				tmp.add(minDist[x] + whatIsEdgeWeight(x, y));
-//	    			//System.out.println("tmp:" + tmp);
-//	    			System.out.println("edge" + whatIsEdgeWeight(x, y));
-//	    			System.out.println("mijn:" + minDist[x]);
-//	    		}
-//	    		if(tmp.size() > 0) {
-//	    			Collections.sort(tmp);
-//	    			System.out.println("tmp:" + tmp);
-//		    		minDist[y] = min(minDist[y], tmp.get(0));
-//		    		System.out.println("mijnafter:" + tmp.get(0));
-//	    		}
-//	    		tmp.clear();
-//	    	}
-//	    }
-	    
 	    for (int i = 0; i < minDist.length ; i++) {
-		      for (int v = 0; v < nbSommets; v++) {
-		        for (int x : adjacency(edgeWeight, v)) {
-		          if (minDist[x] > minDist[v] + edgeWeight[v][x]) {
-		            minDist[x] = minDist[v] + edgeWeight[v][x];
-		            pred[x] = v;
-		          }
-		        }
-		      }
-		    }
+	    	for (int v = 0; v < nbSommets; v++) {
+	    		for (int x : adjacency(edgeWeight, v)) {
+	    			if (minDist[x] > minDist[v] + edgeWeight[v][x]) {
+	    				minDist[x] = minDist[v] + edgeWeight[v][x];
+	    				predecesseur[x] = v;
+	    			}
+	    		}
+	    	}
+	    	tmpLine[0] = " k=" + Integer.toString(k) + " ";
+		    /** Quand on a fini tous les calul, on enregistre le tout en string pour l'afficher*/
+			for (int a = 1; a < tmpLine.length; a++) {
+				tmpLine[a] = nodesHashMap.get(a - 1).toString();
+			}			
+			bellmanArray.add(tmpLine);
+		    k++;
+	    }
 	    
-	  //cycles negatifs
+	  
 	    for (int v = 0; v < nbArc; v++) {
 	      for (int x : adjacency(edgeWeight, v)) {
 	        if (minDist[x] > minDist[v] + edgeWeight[v][x]) {
@@ -618,7 +609,7 @@ public class Graphe {
 	      }
 	    }
 	    
-	    Integer[][] result = {pred, minDist};
+	    Integer[][] result = {predecesseur, minDist};
 
 	    for (int i = 0; i < result.length; i++) {
 			for (int j = 0; j < minDist.length ; j++) {
@@ -626,6 +617,13 @@ public class Graphe {
 			}
 			System.out.println("");
 		}
+	    
+	    //test avec node
+	    
+		
+
+		//bellmanArray.add(tmpLine);
+	    //printNodeHashMap();
 	}
 	
 	/**
@@ -711,7 +709,7 @@ public class Graphe {
 	
 	public void dijkstra(int initialEnd) {
 		System.out.println("\n -----ALGORITHME DE DIJKSTRA-----");
-
+		
 	}
 	
 	public void calculateMinValuePaths() {
@@ -719,6 +717,7 @@ public class Graphe {
 		
 		bellman(0);
 		printBellmanArray();
+		dijkstra(0);
 		
 //		if(isArcNegativeValue()) {
 //			System.out.println("Il y a presence d'au moins un arc a valeur negative. \n");
