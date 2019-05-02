@@ -1,0 +1,10 @@
+ CC    0    1    2    3    4    5    6    7  
+ k=0  0(0) inf  inf  inf  inf  inf  inf  inf 
+ k=7  0(0) inf  inf  inf  inf  inf  inf  inf 
+ k=7  0(0) inf  inf  inf  inf  inf  inf  inf 
+ k=7  0(0) inf  inf  inf  inf  inf  inf  inf 
+ k=7  0(0) inf  inf  inf  inf  inf  inf  inf 
+ k=7  0(0) inf  inf  inf  inf  inf  inf  inf 
+ k=7  0(0) inf  inf  inf  inf  inf  inf  inf 
+ k=7  0(0) inf  inf  inf  inf  inf  inf  inf 
+ k=7  0(0) inf  inf  inf  inf  inf  inf  inf 
