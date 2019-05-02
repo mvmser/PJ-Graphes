@@ -1,7 +1,11 @@
 package readGraphe;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,10 +20,13 @@ import java.util.Scanner;
 public class Graphe {
 	/** Attribut permettant de connaitre le dossier ou se situent les graphes*/
 	private final static String RESOURCES_PATH = "files/";
+	private final static String RESOURCES_PATH_TRACE = "files/traces/";
+
 	
 	/** Attribut contenant le nombre de sommets*/
 	private int nbSommets;
-	int nbArc;
+	private int nbArc;
+	private int numGraph;
 	
 	/** Attribut contenant tous les arcs */
 	private ArrayList<Edge> edges = new ArrayList<Edge>();
@@ -39,6 +46,7 @@ public class Graphe {
 	 * @param numeroFichier
 	 */
 	public Graphe(int numeroFichier) {
+		numGraph = numeroFichier;
 		readGraphe(numeroFichier);
 	}
 	
@@ -67,12 +75,16 @@ public class Graphe {
 		File[] files = repertoire.listFiles();
 		String fileName;
 		for (File file : files) {
-			fileName = (file.getName() != null) ? file.getName().substring(0,file.getName().indexOf('.')) : "";
-			try {
-				filesNames.add(Integer.parseInt(fileName.substring(6)));
-			}catch (NumberFormatException  e) {
-				System.out.println("Pb dans le nom du fichier.. IL FAUT SUIVRE: L3-B2-NUMERO.txt");
+			//VERIFIER NE PAS OUVRIR TRACE /!!!!!\
+			if(!file.getName().contains("trace") && file.getName().contains(".txt")) {
+				fileName = (file.getName() != null) ? file.getName().substring(0,file.getName().indexOf('.')) : "";
+				try {
+					filesNames.add(Integer.parseInt(fileName.substring(6)));
+				}catch (NumberFormatException  e) {
+					System.out.println("Pb dans le nom du fichier.. IL FAUT SUIVRE: L3-B2-NUMERO.txt");
+				}
 			}
+			
 		}
 		Collections.sort(filesNames);
 		return filesNames;
@@ -408,7 +420,6 @@ public class Graphe {
 				System.out.print(successorsArray.get(i));
 		}
 		System.out.println("");
-
 	}
 	
 	/**
@@ -425,7 +436,6 @@ public class Graphe {
 			else
 				System.out.println(predeccessorArray.get(i));
 		}
-
 	}
 	
 	/**
@@ -473,19 +483,6 @@ public class Graphe {
 	}
 	
 	/**
-	 * @deprecated Arrays.fill()
-	 * @param initialEnd
-	 * @param k
-	 */
-	public void fillArray(int initialEnd, int k) {
-		for(int i = 0; i < nbSommets; i++) {
-		}
-		//on passe à l'iteration suivante
-		k++;
-		fillArray(initialEnd, k);
-	}
-	
-	/**
 	 * Permet d'initialiser le belman avec un sommet de depart
 	 * @param un sommet de depart
 	 */
@@ -506,7 +503,6 @@ public class Graphe {
 			}else {
 				nodesHashMap.put(i, new Node(i, INFINITY));
 			}
-			
 		}	
 	}
 	
@@ -543,9 +539,7 @@ public class Graphe {
 
 		bellmanArray.add(initLine);
 	}
-	
-	//public void met(successeurdesommet)
-	
+		
 	public ArrayList<String[]> getBellmanArray(){
 		return bellmanArray;
 	}
@@ -560,7 +554,7 @@ public class Graphe {
 	    return result;
   	}
 	  
-	public void bellman(int startVertex) {
+	public void oldBellman(int startVertex) {
 		Integer[][] edgeWeight = new Integer[nbArc][nbArc];
 		initBellman(startVertex);
 		
@@ -616,14 +610,10 @@ public class Graphe {
 				System.out.print(result[i][j] + " ");
 			}
 			System.out.println("");
-		}
-	    
-	    //test avec node
-	    
-		
-
+		}	   
 		//bellmanArray.add(tmpLine);
 	    //printNodeHashMap();
+	    trace(startVertex, bellmanArray);
 	}
 	
 	/**
@@ -631,37 +621,27 @@ public class Graphe {
 	 * @deprecated ancienne version..
 	 * @param sommetDepart
 	 */
-	public void oldBellman(int startVertex) {
+	public void bellman(int startVertex) {
 		System.out.println("\n -----ALGORITHME DE BELLMAN-----");
 		
 		/** Permet d'initiliser*/
 		initBellman(startVertex);		
 		
 		boolean stop = false;
-		//int predecessor;
 		
-		ArrayList <Integer> predecessors = new ArrayList<>();
-		predecessors.add(startVertex); 
-//		
+//		ArrayList <Integer> predecessors = new ArrayList<>();
+//		predecessors.add(startVertex); 
+
 		ArrayList <Integer> actualVertices = new ArrayList<>();
 		ArrayList <Integer> nextVertices = new ArrayList<>();
 
 		actualVertices.add(startVertex);
 		int actualDistance = 0;
 		
-		String[] initLine = new String[nbSommets + 1];
-		initLine[0] = " k=0 ";
-		/** Quand on a fini tous les calul, on enregistre le tout en string pour l'afficher*/
-		for (int i = 1; i < initLine.length; i++) {
-			initLine[i] = nodesHashMap.get(i - 1).toString();
-		}
-
-		bellmanArray.add(initLine);
-		
 		int k = 1;
 		do {
 			//debug
-			System.out.print("k=" + k);
+			System.out.print("k=" + k + " ");
 			//
 			
 			String[] tmpLine = new String[nbSommets + 1];
@@ -679,12 +659,15 @@ public class Graphe {
 					else
 						actualDistance = 0;
 					
-					nodesHashMap.get(successor).setDistance(actualDistance + min(whatIsEdgeWeight(actualVertex, successor), nodesHashMap.get(successor).getDistance()));
+					//nodesHashMap.get(successor).setDistance(actualDistance + min(whatIsEdgeWeight(actualVertex, successor), nodesHashMap.get(successor).getDistance()));
+					nodesHashMap.get(successor).setDistance(min(nodesHashMap.get(successor).getDistance(), actualDistance + whatIsEdgeWeight(actualVertex, successor)));
+
 					nextVertices.add(successor);
 					
 				}
 				//debug
 				printSuccessorsOf(actualVertex);
+				//
 
 			}		
 			//System.out.println(actualVertices);
@@ -741,6 +724,30 @@ public class Graphe {
 //				dijkstra(sommetDepart);
 //			}
 //		}
+	}
+	
+	/**
+	 * Tout ce qui figure sur l’écran, doit en même temps être écrit dans un fichier
+		L3-<numéro d’équipe>- trace#_#.txt, où le premier # doit être remplacé par le numéro du graphe test, et le
+		second, par le numéro du sommet d’origine. Par exemple, si vous exécutez la recherche des chemins les plus
+		courts sur le graphe 5 depuis le sommet 3, le fichier créé doit s’appeler L3-<numéro d’équipe>-trace5_3.txt.
+	 */
+	public boolean trace(int startVertex, ArrayList<String[]> stringMinValuePaths) {
+		try {
+			PrintWriter fichier = new PrintWriter(RESOURCES_PATH_TRACE + "L3-B2-trace" + this.numGraph + "_" + startVertex + ".txt");
+
+			for(String[] line : stringMinValuePaths) {
+				for (int i = 0; i < line.length; i++) {
+					fichier.print(line[i]);
+				}
+				fichier.println("");
+			}
+			
+			fichier.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	@Override
