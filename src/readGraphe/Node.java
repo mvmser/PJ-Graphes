@@ -33,7 +33,9 @@ public class Node {
 	@Override
 	public String toString() {
 		if(this.distance == Integer.MAX_VALUE) {
-			return " inf ";
+			return " inf  ";
+		}else if(this.getDistance() < 10) {
+			return " " + Integer.toString(this.distance) + "(" + Integer.toString(this.vertex) + ") ";
 		}else {
 			return " " + Integer.toString(this.distance) + "(" + Integer.toString(this.vertex) + ")";
 		}

@@ -10,8 +10,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * @version 1.0
@@ -19,7 +21,7 @@ import java.util.Scanner;
  */
 public class Graphe {
 	/** Attribut permettant de connaitre le dossier ou se situent les graphes*/
-	private final static String RESOURCES_PATH = "files/";
+	private final static String RESOURCES_PATH = "files/"; //a corriger quand dans le dossier principal
 	private final static String RESOURCES_PATH_TRACE = "files/traces/";
 
 	
@@ -35,6 +37,8 @@ public class Graphe {
 	private ArrayList<String[]> dijkstraArray = new ArrayList<String[]>();
 
 	private HashMap<Integer, Node> nodesHashMap= new HashMap<Integer, Node>();
+	private HashMap<Integer, Node> nodesDijkstraHashMap= new HashMap<Integer, Node>();
+
 	
 	private final int INFINITY = Integer.MAX_VALUE;
 	private final int NO_PRED = -1;
@@ -349,19 +353,6 @@ public class Graphe {
 	}
 	
 	/**
-	 * Permet de connaitre la valeur minimal entre 1 entier et un double 
-	 * (dans le cas ou la valeur est Double.Infinity)
-	 * @param a
-	 * @param b
-	 * @return l'entier minimal
-	 * @deprecated utiliser la fonction min(int,int)
-	 */
-	public int min(int a, double b) {
-		if(a <= b) return a;
-		return (int)b;		
-	}
-	
-	/**
 	 * Permet de retourner le ou les successeurs d'un sommet 
 	 * @param un sommet
 	 * @return tableau de successeurs
@@ -490,19 +481,27 @@ public class Graphe {
 		/** Creation et initilisation du header*/
 		/** l'entete contient la premiere case + les sommets*/
 		String[] header = new String[nbSommets + 1]; 
-		header[0] = " CC  ";
+		header[0] = " CC\t";
 		for(int i = 0; i < nbSommets; i++) {
 			header[i + 1] = "  " + Integer.toString(i) + "  ";
 		}
-		bellmanArray.add(header);	
+		dijkstraArray.add(header);	
 		
 		/** Initialisation..*/
 		for(int i = 0; i < nbSommets; i++) {
-			if(i == startVertex) {
-				nodesHashMap.put(i, new Node(i, 0));
-			}else {
-				nodesHashMap.put(i, new Node(i, INFINITY));
+//			if(i == startVertex) 
+//				nodesDijkstraHashMap.put(i, new Node(i, 0));
+			System.out.println("i : " + i);
+			for (int j : predeccessorOf(i)) {	
+				System.out.println(j);
+				System.out.println("nxt");
+//				 if(startVertex == j)
+//					nodesDijkstraHashMap.put(i, new Node(i, whatIsEdgeWeight(j, i)));
+//				 else
+//					nodesDijkstraHashMap.put(i, new Node(i, 0));
 			}
+			nodesDijkstraHashMap.put(i, new Node(i, 111));
+
 		}	
 	}
 	
@@ -516,7 +515,7 @@ public class Graphe {
 		String[] header = new String[nbSommets + 1]; 
 		header[0] = " CC  ";
 		for(int i = 0; i < nbSommets; i++) {
-			header[i + 1] = "  " + Integer.toString(i) + "  ";
+			header[i + 1] = "  " + Integer.toString(i) + "   ";
 		}
 		bellmanArray.add(header);	
 		
@@ -618,7 +617,6 @@ public class Graphe {
 	
 	/**
 	 * Algorithme de Bellman
-	 * @deprecated ancienne version..
 	 * @param sommetDepart
 	 */
 	public void bellman(int startVertex) {
@@ -628,9 +626,6 @@ public class Graphe {
 		initBellman(startVertex);		
 		
 		boolean stop = false;
-		
-//		ArrayList <Integer> predecessors = new ArrayList<>();
-//		predecessors.add(startVertex); 
 
 		ArrayList <Integer> actualVertices = new ArrayList<>();
 		ArrayList <Integer> nextVertices = new ArrayList<>();
@@ -661,7 +656,7 @@ public class Graphe {
 					
 					//nodesHashMap.get(successor).setDistance(actualDistance + min(whatIsEdgeWeight(actualVertex, successor), nodesHashMap.get(successor).getDistance()));
 					nodesHashMap.get(successor).setDistance(min(nodesHashMap.get(successor).getDistance(), actualDistance + whatIsEdgeWeight(actualVertex, successor)));
-
+		
 					nextVertices.add(successor);
 					
 				}
@@ -671,8 +666,9 @@ public class Graphe {
 
 			}		
 			//System.out.println(actualVertices);
+
 			actualVertices.clear();
-			for (int nextVertex : nextVertices) {
+			for (int nextVertex : removeDuplicates(nextVertices)) {
 				actualVertices.add(nextVertex);
 			}
 			nextVertices.clear();
@@ -683,16 +679,89 @@ public class Graphe {
 			}
 
 			bellmanArray.add(tmpLine);
-			//printNodeHashMap();
 
-			if(k == 5) stop = true;
+			if(stop(tmpLine)) {
+				stop = true;
+				System.out.println("OKAY");
+			}
+			else System.out.println("PAS OKAY");
+			if(stop(tmpLine)) stop = true;
+			if(k == 10) stop = true;
 			k++;
 		}while(!stop);
 	}
 	
-	public void dijkstra(int initialEnd) {
+	/**
+	 * Permet de savoir quand l'algo doit d'arreter
+	 * si 2 itérations sont égales, retourner vrai
+	 * @param tmpLine
+	 * @return
+	 */
+	public boolean stop(String[] tmpLine) {
+		for (int i = 1; i < tmpLine.length; i++) {
+			System.out.println("tmp: " + tmpLine[i] + "bell: " 
+					+ bellmanArray.get(bellmanArray.size() - 1)[i]);
+			if(!(bellmanArray.get(bellmanArray.size() - 2)[i]).equals(tmpLine[i]))
+				return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Permet de supprimer les duplicats d'un arraylist
+	 * @param list
+	 * @return
+	 */
+	public ArrayList<Integer> removeDuplicates(ArrayList<Integer> list) 
+    { 
+        ArrayList<Integer> newList = new ArrayList<Integer>(); 
+  
+        for (Integer element : list) { 
+            if (!newList.contains(element)) { 
+                newList.add(element); 
+            } 
+        } 
+  
+        return newList; 
+    } 
+	
+	public void dijkstra(int startVertex) {
 		System.out.println("\n -----ALGORITHME DE DIJKSTRA-----");
+		initDijkstra(startVertex);
 		
+		ArrayList<String> CC = new ArrayList<String>();
+		ArrayList<String> M = new ArrayList<String>();
+		
+		/** Initialisation de CC et M*/
+		CC.add(Integer.toString(startVertex));
+		for (int i = 0; i < nbSommets; i++) {
+			if(i != startVertex) M.add(Integer.toString(i));
+		}
+		
+		/** Initialisation de la line contenant l'itération*/
+		String[] tmpLine = new String[nbSommets + 1];
+		tmpLine[0] = arrayListToString(M);
+		
+		/** Quand on a fini tous les calul, on enregistre le tout en string pour l'afficher*/
+		for (int i = 1; i < tmpLine.length; i++) {
+			tmpLine[i] = nodesDijkstraHashMap.get(i - 1).toString();
+		}
+		dijkstraArray.add(tmpLine);
+		
+		/** debug*/
+		System.out.println("CC: " + CC);
+		System.out.println("M: " + M);
+
+		printDijkstraArray();
+	}
+	
+	public String arrayListToString(ArrayList<String> list) {
+		String str = "";
+		for (String string : list) {
+			str += string;
+		}
+		str += "\t";
+		return str;
 	}
 	
 	public void calculateMinValuePaths() {
@@ -701,6 +770,7 @@ public class Graphe {
 		bellman(0);
 		printBellmanArray();
 		dijkstra(0);
+		
 		
 //		if(isArcNegativeValue()) {
 //			System.out.println("Il y a presence d'au moins un arc a valeur negative. \n");
