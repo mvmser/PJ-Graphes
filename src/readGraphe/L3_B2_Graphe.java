@@ -15,7 +15,7 @@ import java.util.Scanner;
  * @version 1.0
  *
  */
-public class Graphe {
+public class L3_B2_Graphe {
 	/** Attribut permettant de connaitre le dossier ou se situent les graphes*/
 	private final static String RESOURCES_PATH = "files/"; //a corriger quand dans le dossier principal
 	private final static String RESOURCES_PATH_TRACE = "files/traces/";
@@ -27,13 +27,13 @@ public class Graphe {
 	private int numGraph;
 	
 	/** Attribut contenant tous les arcs */
-	private ArrayList<Edge> edges = new ArrayList<Edge>();
+	private ArrayList<L3_B2_Edge> edges = new ArrayList<L3_B2_Edge>();
 
 	private ArrayList<String[]> bellmanArray = new ArrayList<String[]>();
 	private ArrayList<String[]> dijkstraArray = new ArrayList<String[]>();
 
-	private HashMap<Integer, Node> nodesHashMap= new HashMap<Integer, Node>();
-	private HashMap<Integer, Node> nodesDijkstraHashMap= new HashMap<Integer, Node>();
+	private HashMap<Integer, L3_B2_Node> nodesHashMap= new HashMap<Integer, L3_B2_Node>();
+	private HashMap<Integer, L3_B2_Node> nodesDijkstraHashMap= new HashMap<Integer, L3_B2_Node>();
 
 	
 	private final int INFINITY = Integer.MAX_VALUE;
@@ -45,7 +45,7 @@ public class Graphe {
 	 * Constructeur du Graphe
 	 * @param numeroFichier
 	 */
-	public Graphe(int numeroFichier) {
+	public L3_B2_Graphe(int numeroFichier) {
 		numGraph = numeroFichier;
 		readGraphe(numeroFichier);
 	}
@@ -142,7 +142,7 @@ public class Graphe {
 				/** On enregistre les valeurs de l'arc dans une ArrayList (apres les avoir converti en entier)*/	
 				if(array.length == 3) {
 					/** On cree notre arc grace à ces valeurs*/
-					edges.add(new Edge(arrayStringToInt(array)[0], arrayStringToInt(array)[1], arrayStringToInt(array)[2]));
+					edges.add(new L3_B2_Edge(arrayStringToInt(array)[0], arrayStringToInt(array)[1], arrayStringToInt(array)[2]));
 				}else {
 					System.out.println("Le fichier est incorrect, il n'y a pas les 3 elements dï¿½finissant un arc..");
 				}
@@ -395,7 +395,7 @@ public class Graphe {
 	 */
 	public int whatIsEdgeWeight(int initialEnd, int finalEnd) {	
 		int edgeWeight = Integer.MAX_VALUE;
-		for(Edge arc : edges) {
+		for(L3_B2_Edge arc : edges) {
 			if(arc.getInitialEnd() == initialEnd && arc.getFinalEnd() == finalEnd)
 				edgeWeight =  arc.getEdgeWeight();
 		}
@@ -457,7 +457,7 @@ public class Graphe {
 //				 else
 //					nodesDijkstraHashMap.put(i, new Node(i, 0));
 			}
-			nodesDijkstraHashMap.put(i, new Node(i, 111));
+			nodesDijkstraHashMap.put(i, new L3_B2_Node(i, 111));
 
 		}	
 	}
@@ -479,9 +479,9 @@ public class Graphe {
 		/** Initialisation..*/
 		for(int i = 0; i < nbSommets; i++) {
 			if(i == startVertex) {
-				nodesHashMap.put(i, new Node(i, 0));
+				nodesHashMap.put(i, new L3_B2_Node(i, 0));
 			}else {
-				nodesHashMap.put(i, new Node(i, INFINITY));
+				nodesHashMap.put(i, new L3_B2_Node(i, INFINITY));
 			}
 			
 		}	
@@ -510,7 +510,7 @@ public class Graphe {
 		Integer[][] edgeWeight = new Integer[nbArc][nbArc];
 		initBellman(startVertex);
 		
-		for (Edge edge : edges) {
+		for (L3_B2_Edge edge : edges) {
 			edgeWeight[edge.getInitialEnd()][edge.getFinalEnd()] = edge.getEdgeWeight();
 		}
 		
@@ -565,7 +565,7 @@ public class Graphe {
 		}	   
 		//bellmanArray.add(tmpLine);
 	    //printNodeHashMap();
-	    trace(startVertex, bellmanArray);
+	    
 	}
 	
 	/**
@@ -643,6 +643,7 @@ public class Graphe {
 			k++;
 		}while(!stop);
 		printBellmanArray();
+		trace(startVertex, bellmanArray);
 	}
 	
 	/**
@@ -778,7 +779,7 @@ public class Graphe {
 	public String toString() {
 		String tmp = "";
 		
-		for (Edge edge : edges) {
+		for (L3_B2_Edge edge : edges) {
 			tmp += "" + edge + "\n";
 		}
 		return tmp;

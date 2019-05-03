@@ -2,14 +2,13 @@ package IHM;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
-
-import readGraphe.Graphe;
+import readGraphe.L3_B2_Graphe;
 
 /**
  * @version 1.0
  *
  */
-public class testGraphes {	
+public class L3_B2_testGraphes {	
 	/**
 	 * @param args
 	 * @since 1.0
@@ -32,7 +31,7 @@ public class testGraphes {
 					fileNumber = sc.nextInt();
 					OK = true;
 					
-					if(!Graphe.isFileExist(fileNumber)) {
+					if(!L3_B2_Graphe.isFileExist(fileNumber)) {
 						OK = false;
 						System.out.print("Le fichier demandé n'existe pas.. Veuillez en entrer un autre: ");
 						sc.nextLine();
@@ -44,7 +43,7 @@ public class testGraphes {
 			}
 			sc.nextLine(); //clear buffer
 			
-			Graphe graphe = new Graphe(fileNumber);
+			L3_B2_Graphe graphe = new L3_B2_Graphe(fileNumber);
 			
 			System.out.println(graphe);
 			

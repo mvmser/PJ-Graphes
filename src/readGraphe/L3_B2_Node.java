@@ -1,15 +1,15 @@
 package readGraphe;
 
-public class Node {
+public class L3_B2_Node {
 
 	private int vertex;
 	private int distance;
 	
-	public Node() {
+	public L3_B2_Node() {
 		
 	}
 	
-	public Node(int _vertex, int _dist) {
+	public L3_B2_Node(int _vertex, int _dist) {
 		this.vertex = _vertex;
 		this.distance = _dist;
 	}

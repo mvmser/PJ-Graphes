@@ -1,7 +1,0 @@
- CC    0    1    2    3    4  
- k=0  0(0) inf  inf  inf  inf 
- k=4  0(0) inf  inf  inf  inf 
- k=4  0(0) inf  inf  inf  inf 
- k=4  0(0) inf  inf  inf  inf 
- k=4  0(0) inf  inf  inf  inf 
- k=4  0(0) inf  inf  inf  inf 

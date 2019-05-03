@@ -1,18 +1,18 @@
 package readGraphe;
 
-public class Edge {
+public class L3_B2_Edge {
 
 	private int initialEnd;
 	private int edgeWeight ;
 	private int finalEnd;
 	
-	public Edge(int initialEnd, int edgeWeight, int finalEnd) {
+	public L3_B2_Edge(int initialEnd, int edgeWeight, int finalEnd) {
 		this.initialEnd = initialEnd;
 		this.edgeWeight = edgeWeight;
 		this.finalEnd = finalEnd;
 	}
 
-	public Edge() {
+	public L3_B2_Edge() {
 	}
 
 	public int getInitialEnd() {
