@@ -643,7 +643,7 @@ public class L3_B2_Graphe {
 			k++;
 		}while(!stop);
 		printBellmanArray();
-		trace(startVertex, bellmanArray);
+		trace(startVertex, bellmanArray, "Bellman");
 	}
 	
 	/**
@@ -757,10 +757,11 @@ public class L3_B2_Graphe {
 		second, par le numéro du sommet d’origine. Par exemple, si vous exécutez la recherche des chemins les plus
 		courts sur le graphe 5 depuis le sommet 3, le fichier créé doit s’appeler L3-<numéro d’équipe>-trace5_3.txt.
 	 */
-	public boolean trace(int startVertex, ArrayList<String[]> stringMinValuePaths) {
+	public boolean trace(int startVertex, ArrayList<String[]> stringMinValuePaths, String algo) {
 		try {
 			PrintWriter fichier = new PrintWriter(RESOURCES_PATH_TRACE + "L3-B2-trace" + this.numGraph + "_" + startVertex + ".txt");
 
+			fichier.println("-------- Algorithme de " + algo + " --------");
 			for(String[] line : stringMinValuePaths) {
 				for (int i = 0; i < line.length; i++) {
 					fichier.print(line[i]);
