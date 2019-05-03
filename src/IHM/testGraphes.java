@@ -11,19 +11,11 @@ import readGraphe.Graphe;
  */
 public class testGraphes {	
 	/**
-	 * Algo:
-	 * début
-		tant que l’utilisateur veut tester un nouveau graphe faire §§
-			choisir le fichier texte par son numéro
-			lire le fichier correspondant et sauvegarder le graphe en mémoire
-			imprimer le graphe sous forme d’une matrice d’adjacence à partir de la mémoire et non pas lors de la lecture du fichier texte
-			calculer les chemins de valeur minimale
-		 fait
-		fin
 	 * @param args
 	 * @since 1.0
 	 */
-	public static void main(String[] args) {	   
+	public static void main(String[] args) {
+		/**Variable pr savoir quand quitter*/
 		boolean continuer = true;
 		Scanner sc = new Scanner(System.in);
 		

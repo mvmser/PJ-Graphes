@@ -1,19 +1,15 @@
 package readGraphe;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 
 /**
  * @version 1.0
@@ -70,6 +66,10 @@ public class Graphe {
 		return nbArc;
 	}
 	
+	public ArrayList<String[]> getBellmanArray(){
+		return bellmanArray;
+	}
+	
 	/**
 	 * Permet de connaitre tous les fichiers présent dans le dossier files
 	 * @return
@@ -79,7 +79,6 @@ public class Graphe {
 		File[] files = repertoire.listFiles();
 		String fileName;
 		for (File file : files) {
-			//VERIFIER NE PAS OUVRIR TRACE /!!!!!\
 			if(!file.getName().contains("trace") && file.getName().contains(".txt")) {
 				fileName = (file.getName() != null) ? file.getName().substring(0,file.getName().indexOf('.')) : "";
 				try {
@@ -93,6 +92,7 @@ public class Graphe {
 		Collections.sort(filesNames);
 		return filesNames;
 	}
+	
 	/**
 	 * Permet de savoir si le fichier existe ou non
 	 * @param fileNumber
@@ -171,33 +171,6 @@ public class Graphe {
 		}
 
 		return intArray;
-	}
-	
-	/**
-	 * Permet d'initialiser la matrice d'adjacence 
-	 * @param adjacencyMatrix
-	 * @return La matrice d'adjacence sous forme d'un tableau 2D
-	 * @since 1.0
-	 * @deprecated utiliser initMatrix
-	 */
-	public String[][] initAdjacencyMatrix(String[][] adjacencyMatrix){
-		/** i: les lignes */
-		for(int i = 0; i < adjacencyMatrix.length; i++) {
-			/** j: les colonnes*/
-			for(int j = 0; j < adjacencyMatrix.length; j++) {
-				/** Rien en 0,0*/
-				if(i == 0 && j == 0)
-					adjacencyMatrix[i][j] = "/" + " ";
-				else if(j == 0)
-					adjacencyMatrix[i][j] = Integer.toString(i - 1) + " ";
-				else if(i == 0)
-					adjacencyMatrix[i][j] = Integer.toString(j - 1) + " ";
-				else 
-					adjacencyMatrix[i][j] = "- ";
-			}
-		}
-		
-		return adjacencyMatrix;
 	}
 	
 	/**
@@ -297,22 +270,6 @@ public class Graphe {
 		}
 		
 		return valuesMatrix;
-	}
-
-	/**
-	 * Permet d'afficher la matrice d'adjacence
-	 * @since 1.0
-	 * @deprecated utiliser plutot printMatrix
-	 */
-	public void printAdjacencyMatrix() {
-		String[][] adjacencyMatrix = this.createAdjacencyMatrix();
-
-		for(int i = 0; i < adjacencyMatrix.length; i++) {
-			for(int j = 0; j < adjacencyMatrix.length; j++) {
-					System.out.print(adjacencyMatrix[i][j]);
-			}
-			System.out.println("");
-		}
 	}
 	
 	/**
@@ -538,10 +495,6 @@ public class Graphe {
 
 		bellmanArray.add(initLine);
 	}
-		
-	public ArrayList<String[]> getBellmanArray(){
-		return bellmanArray;
-	}
 	
 	private List<Integer> adjacency(Integer[][] G, int v) {
 	    List<Integer> result = new ArrayList<Integer>();
@@ -635,17 +588,17 @@ public class Graphe {
 		
 		int k = 1;
 		do {
-			//debug
-			System.out.print("k=" + k + " ");
-			//
+//			//debug
+//			System.out.print("k=" + k + " ");
+//			//
 			
 			String[] tmpLine = new String[nbSommets + 1];
 			tmpLine[0] = " k=" + Integer.toString(k) + " ";
 			
 			for (int actualVertex : actualVertices) {
-				//debug
-				System.out.print(" Sommet en cours: " + actualVertex);
-				//
+//				//debug
+//				System.out.print(" Sommet en cours: " + actualVertex);
+//				//
 				for (int successor : successorsOf(actualVertex)) {						
 					nodesHashMap.get(successor).setVertex(actualVertex);
 					
@@ -660,9 +613,9 @@ public class Graphe {
 					nextVertices.add(successor);
 					
 				}
-				//debug
-				printSuccessorsOf(actualVertex);
-				//
+//				//debug
+//				printSuccessorsOf(actualVertex);
+//				//
 
 			}		
 			//System.out.println(actualVertices);
@@ -680,15 +633,16 @@ public class Graphe {
 
 			bellmanArray.add(tmpLine);
 
-			if(stop(tmpLine)) {
-				stop = true;
-				System.out.println("OKAY");
-			}
-			else System.out.println("PAS OKAY");
+//			if(stop(tmpLine)) {
+//				stop = true;
+//				System.out.println("OKAY");
+//			}
+//			else System.out.println("PAS OKAY");
 			if(stop(tmpLine)) stop = true;
 			if(k == 10) stop = true;
 			k++;
 		}while(!stop);
+		printBellmanArray();
 	}
 	
 	/**
@@ -699,8 +653,8 @@ public class Graphe {
 	 */
 	public boolean stop(String[] tmpLine) {
 		for (int i = 1; i < tmpLine.length; i++) {
-			System.out.println("tmp: " + tmpLine[i] + "bell: " 
-					+ bellmanArray.get(bellmanArray.size() - 1)[i]);
+//			System.out.println("tmp: " + tmpLine[i] + "bell: " 
+//					+ bellmanArray.get(bellmanArray.size() - 1)[i]);
 			if(!(bellmanArray.get(bellmanArray.size() - 2)[i]).equals(tmpLine[i]))
 				return false;
 		}
@@ -768,8 +722,8 @@ public class Graphe {
 		//Scanner sc = new Scanner(System.in);
 		
 		bellman(0);
-		printBellmanArray();
-		dijkstra(0);
+		
+		//dijkstra(0);
 		
 		
 //		if(isArcNegativeValue()) {
