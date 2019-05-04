@@ -40,6 +40,18 @@ public class L3_B2_Node {
 			return " " + Integer.toString(this.distance) + "(" + Integer.toString(this.vertex) + ")";
 		}
 	}
+	
+	public String toStringDijkstra() {
+		if(this.distance == Integer.MAX_VALUE) {
+			return "inf";
+		}else if(this.getDistance() == -1) {
+			return ".";
+		}else if(this.getDistance() < 50) {
+			return "" + Integer.toString(this.distance) + "(" + Integer.toString(this.vertex) + ")";
+		}
+		
+		return "";
+	}
 
 	
 }

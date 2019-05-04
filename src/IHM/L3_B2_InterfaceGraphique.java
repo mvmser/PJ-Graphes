@@ -8,6 +8,8 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JComboBox;
 import java.awt.event.ActionListener;
@@ -27,6 +29,7 @@ public class L3_B2_InterfaceGraphique extends JFrame{
 	private L3_B2_Graphe graphe = null;
 	private DefaultTableModel matrixModel = new DefaultTableModel();
 	private ArrayList<String[]> bellmanArray = new ArrayList<String[]>();
+	private ArrayList<String[]> dijkstraArray = new ArrayList<String[]>();
 	
 	/** Constantes des cards*/
 	final static String ACCUEIL = "ACCUEIL";
@@ -361,6 +364,7 @@ public class L3_B2_InterfaceGraphique extends JFrame{
 		}
 		choixSommet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+			
 				int n = matrixModel.getRowCount();
 				for (int i=n-1 ; i>=0 ; --i) matrixModel.removeRow(i);
 				
@@ -377,12 +381,17 @@ public class L3_B2_InterfaceGraphique extends JFrame{
 				/** Bellman*/
 				graphe.bellman(sommetDepart);
 				
-				bellmanArray = graphe.getBellmanArray();
-				System.out.println(bellmanArray.size());
-				
-				/** on nettoie */
-				for (String[] line : bellmanArray) {
-					matrixModel.addRow(line);
+				if(!graphe.isNegativeCycle()) {
+					bellmanArray = graphe.getBellmanArray();
+					System.out.println(bellmanArray.size());
+					
+					/** on ajoute */
+					for (String[] line : bellmanArray) {
+						matrixModel.addRow(line);
+					}
+				}else {
+					JOptionPane.showMessageDialog(null,"Le graphe comporte un circuit absorbant!", 
+		            		"Erreur", JOptionPane.ERROR_MESSAGE);
 				}
 				
 				bellmanArray.clear();
@@ -408,6 +417,7 @@ public class L3_B2_InterfaceGraphique extends JFrame{
 		lblNombreDeDarcs.setFont(new Font("Verdana", Font.PLAIN, 10));
 		lblNombreDeDarcs.setBounds(10, 314, 183, 14);
 		panelBellman.add(lblNombreDeDarcs);
+		
 		return panelBellman;
 	}
 	
@@ -420,28 +430,74 @@ public class L3_B2_InterfaceGraphique extends JFrame{
 		
 		JLabel lblNewLabel = new JLabel("Dijkstra");
 		lblNewLabel.setFont(new Font("Verdana", Font.BOLD, 12));
-		lblNewLabel.setBounds(378, 11, 81, 16);
+		lblNewLabel.setBounds(382, 11, 60, 16);
 		panelDijkstra.add(lblNewLabel);
 				
-		/** On recupere notre matrice*/
-		int nbSommets = graphe.getNbSommets();
-		String[][] valuesMatrix = new String[nbSommets + 1][nbSommets + 1];
-		valuesMatrix = graphe.createValuesMatrix();
-		
 		/** On cree notre tableau */
-		DefaultTableModel matrixModel = new DefaultTableModel(0, (nbSommets + 1));
+		int nbSommets = graphe.getNbSommets();
+		matrixModel.setColumnCount(nbSommets + 1);
 		JTable tableMatrice = new JTable(matrixModel);
 		tableMatrice.setBounds(10, 78, 774, 200);
 		tableMatrice.getTableHeader().setUI(null);
 		
-		/** On integre notre matrice a notre tableau*/
-		for (String[] line : valuesMatrix) {
-			matrixModel.addRow(line);
-		}
-		
+		int n = matrixModel.getRowCount();
+		for (int i=n-1 ; i>=0 ; --i) matrixModel.removeRow(i);
+			
 		JScrollPane scrollPane = new JScrollPane(tableMatrice);
 		scrollPane.setBounds(10, 78, 774, 200);
-		panelDijkstra.add(scrollPane);	
+		panelDijkstra.add(scrollPane);
+		
+				
+		/** On doit d'abord connaitre le sommet de depart*/
+		JLabel lblSommetDeDepart = new JLabel("Sommet de depart: ");
+		lblSommetDeDepart.setFont(new Font("Verdana", Font.PLAIN, 10));
+		lblSommetDeDepart.setBounds(615, 304, 114, 14);
+		panelDijkstra.add(lblSommetDeDepart);
+		
+		JComboBox<Integer> choixSommet = new JComboBox<Integer>();
+		for (int i = 0; i < graphe.getNbSommets(); i++) {
+			choixSommet.addItem(i);
+		}
+		choixSommet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(!graphe.isArcNegativeValue()) {
+					int n = matrixModel.getRowCount();
+					for (int i=n-1 ; i>=0 ; --i) matrixModel.removeRow(i);
+					
+					/** On recupere le sommet choisi*/
+					sommetDepart = 0;
+					try {
+						sommetDepart = Integer.parseInt(choixSommet.getSelectedItem().toString());
+					}catch (NumberFormatException  e1) {
+						System.out.println("Erreur dans la recuperation du sommet..");
+					}
+					
+					System.out.println("Vous avez choisi le sommet: " + sommetDepart);
+					
+					/** Bellman*/
+					graphe.dijkstra(sommetDepart);
+					
+					dijkstraArray = graphe.getDijkstraArray();
+					System.out.println(dijkstraArray.size());
+					
+					/** on nettoie */
+					for (String[] line : dijkstraArray) {
+						matrixModel.addRow(line);
+					}
+					
+					graphe.resetArraysLists();
+					dijkstraArray.clear();
+				}else {
+		            JOptionPane.showMessageDialog(null,"Il existe au moins un arc de poids négatif,"
+		            		+ " seul l'algorithme de bellman peut être excecuté.", 
+		            		"Erreur", JOptionPane.ERROR_MESSAGE);	
+				}
+			}
+		});
+		choixSommet.setBounds(739, 301, 45, 20);
+		panelDijkstra.add(choixSommet);				
+		
+		//System.out.println("Sommet: "+ sommetDepart + "Graphe: "+ graphe);
 		
 		/** Infos utilisateur*/
 		JLabel lblGraphe = new JLabel("Graphe: " + choixNumeroFichier);

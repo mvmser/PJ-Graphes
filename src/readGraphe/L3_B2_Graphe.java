@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 /**
@@ -38,7 +39,6 @@ public class L3_B2_Graphe {
 
 	
 	private final int INFINITY = Integer.MAX_VALUE;
-	private final int NO_PRED = -1;
 	
 	private static ArrayList<Integer> filesNames = new ArrayList<Integer>();
 	
@@ -71,7 +71,11 @@ public class L3_B2_Graphe {
 		return bellmanArray;
 	}
 	
-	public boolean getIsNegativeCycle(){
+	public ArrayList<String[]> getDijkstraArray(){
+		return dijkstraArray;
+	}
+	
+	public boolean isNegativeCycle(){
 		return isNegativeCycle;
 	}
 	
@@ -449,26 +453,28 @@ public class L3_B2_Graphe {
 		String[] header = new String[nbSommets + 1]; 
 		header[0] = " CC\t";
 		for(int i = 0; i < nbSommets; i++) {
-			header[i + 1] = "  " + Integer.toString(i) + "  ";
+			header[i + 1] = "" + Integer.toString(i) + "\t";
 		}
 		dijkstraArray.add(header);	
 		
 		/** Initialisation..*/
 		for(int i = 0; i < nbSommets; i++) {
-//			if(i == startVertex) 
-//				nodesDijkstraHashMap.put(i, new Node(i, 0));
-			System.out.println("i : " + i);
-			for (int j : predeccessorOf(i)) {	
-				System.out.println(j);
-				System.out.println("nxt");
-//				 if(startVertex == j)
-//					nodesDijkstraHashMap.put(i, new Node(i, whatIsEdgeWeight(j, i)));
-//				 else
-//					nodesDijkstraHashMap.put(i, new Node(i, 0));
+			for (int pred : predeccessorOf(i)) {	
+				 if(startVertex == pred)
+					nodesDijkstraHashMap.put(i, new L3_B2_Node(i, whatIsEdgeWeight(pred, i)));
+				 else
+					nodesDijkstraHashMap.put(i, new L3_B2_Node(i, INFINITY));
 			}
-			nodesDijkstraHashMap.put(i, new L3_B2_Node(i, 111));
 
 		}	
+		
+		/** Initialisation..*/
+		for (int succ : successorsOf(startVertex)) {	
+			nodesDijkstraHashMap.put(succ, new L3_B2_Node(startVertex, whatIsEdgeWeight(startVertex, succ)));
+
+		}	
+		/** -1 pour afficher le point dans le tableau*/
+		nodesDijkstraHashMap.put(startVertex, new L3_B2_Node(startVertex, -1));
 	}
 	
 	/**
@@ -515,68 +521,6 @@ public class L3_B2_Graphe {
 	    }
 	    return result;
   	}
-	  
-	public void oldBellman(int startVertex) {
-		Integer[][] edgeWeight = new Integer[nbArc][nbArc];
-		initBellman(startVertex);
-		
-		for (L3_B2_Edge edge : edges) {
-			edgeWeight[edge.getInitialEnd()][edge.getFinalEnd()] = edge.getEdgeWeight();
-		}
-		
-		Integer[] predecesseur = new Integer[nbSommets];
-		Integer[] minDist = new Integer[nbSommets];
-		
-		Arrays.fill(predecesseur, NO_PRED);
-		
-		//init V0 � +inf
-	    Arrays.fill(minDist, INFINITY);
-	    //V0[source] = 0
-	    minDist[startVertex] = 0;
-	    predecesseur[startVertex] = startVertex;
-	    
-	    String[] tmpLine = new String[nbSommets + 1];
-	    int k = 0;
-	    
-	    for (int i = 0; i < minDist.length ; i++) {
-	    	for (int v = 0; v < nbSommets; v++) {
-	    		for (int x : adjacency(edgeWeight, v)) {
-	    			if (minDist[x] > minDist[v] + edgeWeight[v][x]) {
-	    				minDist[x] = minDist[v] + edgeWeight[v][x];
-	    				predecesseur[x] = v;
-	    			}
-	    		}
-	    	}
-	    	tmpLine[0] = " k=" + Integer.toString(k) + " ";
-		    /** Quand on a fini tous les calul, on enregistre le tout en string pour l'afficher*/
-			for (int a = 1; a < tmpLine.length; a++) {
-				tmpLine[a] = nodesHashMap.get(a - 1).toString();
-			}			
-			bellmanArray.add(tmpLine);
-		    k++;
-	    }
-	    
-	  
-	    for (int v = 0; v < nbArc; v++) {
-	      for (int x : adjacency(edgeWeight, v)) {
-	        if (minDist[x] > minDist[v] + edgeWeight[v][x]) {
-	          System.out.println("Negative cycle found");
-	        }
-	      }
-	    }
-	    
-	    Integer[][] result = {predecesseur, minDist};
-
-	    for (int i = 0; i < result.length; i++) {
-			for (int j = 0; j < minDist.length ; j++) {
-				System.out.print(result[i][j] + " ");
-			}
-			System.out.println("");
-		}	   
-		//bellmanArray.add(tmpLine);
-	    //printNodeHashMap();
-	    
-	}
 	
 	/**
 	 * Algorithme de Bellman
@@ -620,9 +564,10 @@ public class L3_B2_Graphe {
 					/** Permet de detecter la presence d'un circuit absorbant*/
 					if(nodesHashMap.get(successor).getDistance() != INFINITY 
 							&& nodesHashMap.get(successor).getDistance() < 0){
+						isNegativeCycle = true;
 						System.out.println("Le graphe comporte un circuit absorbant..");
 						bellmanArray.clear();
-						isNegativeCycle = true;
+						System.out.println("NEG : " + isNegativeCycle());
 						return;
 					}
 					/** */
@@ -689,24 +634,76 @@ public class L3_B2_Graphe {
 		System.out.println("\n -----ALGORITHME DE DIJKSTRA-----");
 		initDijkstra(startVertex);
 		
-		ArrayList<String> CC = new ArrayList<String>();
-		ArrayList<String> M = new ArrayList<String>();
+		ArrayList<Integer> CC = new ArrayList<Integer>();
+		ArrayList<Integer> M = new ArrayList<Integer>();
 		
 		/** Initialisation de CC et M*/
-		CC.add(Integer.toString(startVertex));
+		CC.add(startVertex);
 		for (int i = 0; i < nbSommets; i++) {
-			if(i != startVertex) M.add(Integer.toString(i));
+			if(i != startVertex) M.add(i);
 		}
+		System.out.println(M.size());
 		
-		/** Initialisation de la line contenant l'it�ration*/
-		String[] tmpLine = new String[nbSommets + 1];
-		tmpLine[0] = arrayListToString(CC);
+		/** Initialisation de la line contenant la 1ere iteration*/
+		String[] initLine = new String[nbSommets + 1];
+		initLine[0] = arrayListToString(CC) + "";
 		
 		/** Quand on a fini tous les calul, on enregistre le tout en string pour l'afficher*/
-		for (int i = 1; i < tmpLine.length; i++) {
-			tmpLine[i] = " " + Integer.toString(nodesDijkstraHashMap.get(i - 1).getDistance()) + " ";
+		for (int i = 1; i < initLine.length; i++) {
+			initLine[i] = nodesDijkstraHashMap.get(i - 1).toStringDijkstra() + "\t";
 		}
-		dijkstraArray.add(tmpLine);
+		
+		dijkstraArray.add(initLine);
+			
+		do
+		{
+			/** debug*/
+			System.out.println("CC: " + CC);
+			System.out.println("M: " + M);
+			Entry<Integer, L3_B2_Node> currentNode = getLowestDistance(nodesDijkstraHashMap, M);
+			if(currentNode != null) {
+				/** Permet de mettre un sommet de M vers CC*/
+				for (int i = 0; i < M.size(); i++) {
+					if(currentNode != null && M.get(i) == currentNode.getKey()) {
+						CC.add(M.get(i));
+						M.remove(i);
+						Collections.sort(CC);
+						break;
+					}
+				}
+				/** On va regarder ses successeurs*/
+				for (Integer successor : successorsOf(currentNode.getKey()) ) {
+					for(Entry<Integer, L3_B2_Node> entry : nodesDijkstraHashMap.entrySet()) {
+					    if(entry.getKey() == successor) {
+					    	if(entry.getValue().getDistance() != -1) {
+					    		L3_B2_Node node = entry.getValue();
+						    	if(currentNode.getValue().getDistance() != INFINITY ) {
+						    		node.setDistance(currentNode.getValue().getDistance() +
+							    			whatIsEdgeWeight(currentNode.getKey(), successor));
+						    		node.setVertex(currentNode.getKey());
+						    		//currentNode.getValue().setVertex(vertex);
+						    	}
+					    	}
+					    }
+					}
+				}
+				
+				/** On connait ce sommet, on inquique un point a la ligne suivante*/
+				currentNode.getValue().setDistance(-1);
+				
+				/** Quand on a fini tous les calul, on enregistre le tout en string pour l'afficher*/
+				String[] tmpLine = new String[nbSommets + 1];
+				tmpLine[0] = arrayListToString(CC);
+				for (int i = 1; i < tmpLine.length; i++) {
+					tmpLine[i] = nodesDijkstraHashMap.get(i - 1).toStringDijkstra() + "\t";
+				}
+
+				dijkstraArray.add(tmpLine);
+			}else {
+				M.clear();
+			}
+		}while(!M.isEmpty());
+		
 		
 		/** debug*/
 		System.out.println("CC: " + CC);
@@ -715,29 +712,47 @@ public class L3_B2_Graphe {
 		printDijkstraArray();
 	}
 	
-	public String arrayListToString(ArrayList<String> list) {
+	public Entry<Integer, L3_B2_Node> getLowestDistance(HashMap<Integer, L3_B2_Node> nodesDijkstraHashMap, 
+			ArrayList<Integer> M) {
+		int lowestDistance = INFINITY;
+		Entry<Integer, L3_B2_Node> lowestDistanceNode = null;
+		
+		for(Entry<Integer, L3_B2_Node> entry : nodesDijkstraHashMap.entrySet()) {
+		    int vertex = entry.getKey();
+		    L3_B2_Node node = entry.getValue();
+		    if(M.contains(vertex)) {
+		    	if(node.getDistance() < lowestDistance) {
+		    		lowestDistance = node.getDistance();
+		    		lowestDistanceNode = entry;
+		    	}
+		    }
+		}
+		return lowestDistanceNode;
+	}
+	
+	public String arrayListToString(ArrayList<Integer> list) {
 		String str = "";
-		for (String string : list) {
-			str += string;
+		for (int vertex : list) {
+			str += vertex;
 		}
 		str += "\t";
 		return str;
 	}
 	
 	public void calculateMinValuePaths() {
+		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
 		
-		for (int i = 0; i < 6; i++) {
-			bellman(i);
-			
-		}
+			bellman(0);
+			bellmanArray.clear();
+
 		
 		
-		dijkstra(0);
+		dijkstra(2);
 		
 		
 		if(isArcNegativeValue()) {
-			System.out.println("Il y a presence d'au moins un arc a�valeur negative. \n");
+			System.out.println("Il y a presence d'au moins un arc a valeur negative.");
 			System.out.println("-> L'algorithme de Bellman sera execute.");
 			System.out.println("Quel est le sommet de depart ?");
 			
@@ -747,6 +762,7 @@ public class L3_B2_Graphe {
 			System.out.println("Algorithme de Bellman ou Dijkstra ?");
 			System.out.println("1. Bellman");
 			System.out.println("2. Dijkstra");
+			sc.nextLine();
 			int choix = sc.nextInt();
 			
 			System.out.println("Quel est le sommet de depart ?");
