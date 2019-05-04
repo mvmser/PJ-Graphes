@@ -71,7 +71,7 @@ public class L3_B2_Graphe {
 	}
 	
 	/**
-	 * Permet de connaitre tous les fichiers présent dans le dossier files
+	 * Permet de connaitre tous les fichiers prï¿½sent dans le dossier files
 	 * @return
 	 */
 	public static ArrayList<Integer> lookFiles() {
@@ -141,7 +141,7 @@ public class L3_B2_Graphe {
 				
 				/** On enregistre les valeurs de l'arc dans une ArrayList (apres les avoir converti en entier)*/	
 				if(array.length == 3) {
-					/** On cree notre arc grace à ces valeurs*/
+					/** On cree notre arc grace ï¿½ ces valeurs*/
 					edges.add(new L3_B2_Edge(arrayStringToInt(array)[0], arrayStringToInt(array)[1], arrayStringToInt(array)[2]));
 				}else {
 					System.out.println("Le fichier est incorrect, il n'y a pas les 3 elements dï¿½finissant un arc..");
@@ -287,8 +287,8 @@ public class L3_B2_Graphe {
 	}
 	
 	/**
-	 * Permet de savoir si un arc à une valeur négative
-	 * @return vrai si l'arc à une valeur negative, faux sinon
+	 * Permet de savoir si un arc ï¿½ une valeur nï¿½gative
+	 * @return vrai si l'arc ï¿½ une valeur negative, faux sinon
 	 */
 	public boolean isArcNegativeValue() {
 		for(int i = 0; i < nbArc; i++) {
@@ -330,7 +330,7 @@ public class L3_B2_Graphe {
 	}
 	
 	/**
-	 * Permet de connaitre le ou les predeccesseurs d'un sommet donné
+	 * Permet de connaitre le ou les predeccesseurs d'un sommet donnï¿½
 	 * @param un sommet
 	 * @return tableau de predeccesseurs
 	 */
@@ -388,7 +388,7 @@ public class L3_B2_Graphe {
 	
 	/**
 	 * Permet de connaitre la valeur entre 2 arc
-	 * utilisé uniquement entre un sommet et son successeur
+	 * utilisï¿½ uniquement entre un sommet et son successeur
 	 * @param initialEnd
 	 * @param finalEnd
 	 * @return
@@ -519,7 +519,7 @@ public class L3_B2_Graphe {
 		
 		Arrays.fill(predecesseur, NO_PRED);
 		
-		//init V0 à +inf
+		//init V0 ï¿½ +inf
 	    Arrays.fill(minDist, INFINITY);
 	    //V0[source] = 0
 	    minDist[startVertex] = 0;
@@ -643,7 +643,7 @@ public class L3_B2_Graphe {
 	
 	/**
 	 * Permet de savoir quand l'algo doit d'arreter
-	 * si 2 itérations sont égales, retourner vrai
+	 * si 2 itï¿½rations sont ï¿½gales, retourner vrai
 	 * @param tmpLine
 	 * @return
 	 */
@@ -688,13 +688,13 @@ public class L3_B2_Graphe {
 			if(i != startVertex) M.add(Integer.toString(i));
 		}
 		
-		/** Initialisation de la line contenant l'itération*/
+		/** Initialisation de la line contenant l'itï¿½ration*/
 		String[] tmpLine = new String[nbSommets + 1];
-		tmpLine[0] = arrayListToString(M);
+		tmpLine[0] = arrayListToString(CC);
 		
 		/** Quand on a fini tous les calul, on enregistre le tout en string pour l'afficher*/
 		for (int i = 1; i < tmpLine.length; i++) {
-			tmpLine[i] = nodesDijkstraHashMap.get(i - 1).toString();
+			tmpLine[i] = " " + Integer.toString(nodesDijkstraHashMap.get(i - 1).getDistance()) + " ";
 		}
 		dijkstraArray.add(tmpLine);
 		
@@ -715,45 +715,45 @@ public class L3_B2_Graphe {
 	}
 	
 	public void calculateMinValuePaths() {
-		//Scanner sc = new Scanner(System.in);
+		Scanner sc = new Scanner(System.in);
 		
 		for (int i = 0; i < 6; i++) {
 			bellman(i);
 		}
 		
 		
-		//dijkstra(0);
+		dijkstra(0);
 		
 		
-//		if(isArcNegativeValue()) {
-//			System.out.println("Il y a presence d'au moins un arc a valeur negative. \n");
-//			System.out.println("-> L'algorithme de Bellman sera execute.");
-//			System.out.println("Quel est le sommet de depart ?");
-//			
-//			int sommetDepart = sc.nextInt();
-//			bellman(sommetDepart);
-//		}else {
-//			System.out.println("Algorithme de Bellman ou Dijkstra ?");
-//			System.out.println("1. Bellman");
-//			System.out.println("2. Dijkstra");
-//			int choix = sc.nextInt();
-//			
-//			System.out.println("Quel est le sommet de depart ?");
-//			int sommetDepart = sc.nextInt();
-//
-//			if(choix == 1) {
-//				bellman(sommetDepart);
-//			}else if(choix == 2) {
-//				dijkstra(sommetDepart);
-//			}
-//		}
+		if(isArcNegativeValue()) {
+			System.out.println("Il y a presence d'au moins un arc aï¿½valeur negative. \n");
+			System.out.println("-> L'algorithme de Bellman sera execute.");
+			System.out.println("Quel est le sommet de depart ?");
+			
+			int sommetDepart = sc.nextInt();
+			bellman(sommetDepart);
+		}else {
+			System.out.println("Algorithme de Bellman ou Dijkstra ?");
+			System.out.println("1. Bellman");
+			System.out.println("2. Dijkstra");
+			int choix = sc.nextInt();
+			
+			System.out.println("Quel est le sommet de depart ?");
+			int sommetDepart = sc.nextInt();
+
+			if(choix == 1) {
+				bellman(sommetDepart);
+			}else if(choix == 2) {
+				dijkstra(sommetDepart);
+			}
+		}
 	}
 	
 	/**
-	 * Tout ce qui figure sur l’écran, doit en même temps être écrit dans un fichier
-		L3-<numéro d’équipe>- trace#_#.txt, où le premier # doit être remplacé par le numéro du graphe test, et le
-		second, par le numéro du sommet d’origine. Par exemple, si vous exécutez la recherche des chemins les plus
-		courts sur le graphe 5 depuis le sommet 3, le fichier créé doit s’appeler L3-<numéro d’équipe>-trace5_3.txt.
+	 * Tout ce qui figure sur lï¿½ï¿½cran, doit en mï¿½me temps ï¿½tre ï¿½crit dans un fichier
+		L3-<numï¿½ro dï¿½ï¿½quipe>- trace#_#.txt, oï¿½ le premier # doit ï¿½tre remplacï¿½ par le numï¿½ro du graphe test, et le
+		second, par le numï¿½ro du sommet dï¿½origine. Par exemple, si vous exï¿½cutez la recherche des chemins les plus
+		courts sur le graphe 5 depuis le sommet 3, le fichier crï¿½ï¿½ doit sï¿½appeler L3-<numï¿½ro dï¿½ï¿½quipe>-trace5_3.txt.
 	 */
 	public boolean trace(int startVertex, ArrayList<String[]> stringMinValuePaths, String algo) {
 		try {
