@@ -361,6 +361,9 @@ public class L3_B2_InterfaceGraphique extends JFrame{
 		}
 		choixSommet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				int n = matrixModel.getRowCount();
+				for (int i=n-1 ; i>=0 ; --i) matrixModel.removeRow(i);
+				
 				/** On recupere le sommet choisi*/
 				sommetDepart = 0;
 				try {
@@ -373,9 +376,11 @@ public class L3_B2_InterfaceGraphique extends JFrame{
 				
 				/** Bellman*/
 				graphe.bellman(sommetDepart);
+				
 				bellmanArray = graphe.getBellmanArray();
 				System.out.println(bellmanArray.size());
 				
+				/** on nettoie */
 				for (String[] line : bellmanArray) {
 					matrixModel.addRow(line);
 				}

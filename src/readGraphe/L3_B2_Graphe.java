@@ -25,6 +25,7 @@ public class L3_B2_Graphe {
 	private int nbSommets;
 	private int nbArc;
 	private int numGraph;
+	private boolean isNegativeCycle;
 	
 	/** Attribut contenant tous les arcs */
 	private ArrayList<L3_B2_Edge> edges = new ArrayList<L3_B2_Edge>();
@@ -70,6 +71,14 @@ public class L3_B2_Graphe {
 		return bellmanArray;
 	}
 	
+	public boolean getIsNegativeCycle(){
+		return isNegativeCycle;
+	}
+	
+	public void resetArraysLists(){
+		bellmanArray.clear();
+		dijkstraArray.clear();
+	}
 	/**
 	 * Permet de connaitre tous les fichiers pr�sent dans le dossier files
 	 * @return
@@ -493,6 +502,7 @@ public class L3_B2_Graphe {
 			initLine[i] = nodesHashMap.get(i - 1).toString();
 		}
 
+		isNegativeCycle = false;
 		bellmanArray.add(initLine);
 	}
 	
@@ -612,6 +622,7 @@ public class L3_B2_Graphe {
 							&& nodesHashMap.get(successor).getDistance() < 0){
 						System.out.println("Le graphe comporte un circuit absorbant..");
 						bellmanArray.clear();
+						isNegativeCycle = true;
 						return;
 					}
 					/** */
@@ -638,7 +649,6 @@ public class L3_B2_Graphe {
 		}while(!stop);
 		printBellmanArray();
 		trace(startVertex, bellmanArray, "Bellman");
-		bellmanArray.clear();
 	}
 	
 	/**
@@ -719,6 +729,7 @@ public class L3_B2_Graphe {
 		
 		for (int i = 0; i < 6; i++) {
 			bellman(i);
+			
 		}
 		
 		
