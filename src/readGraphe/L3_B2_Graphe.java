@@ -574,10 +574,15 @@ public class L3_B2_Graphe {
 	 */
 	public void bellman(int startVertex) {
 		System.out.println("\n -----ALGORITHME DE BELLMAN-----");
+		System.out.println(" -----      Sommet: "+startVertex+"      -----\n");
 		
 		/** Permet d'initiliser*/
 		initBellman(startVertex);		
 		
+		if(successorsOf(startVertex).isEmpty()) {
+			System.out.println("Le sommet de depart " + startVertex + " n'a aucun successeur.");
+			return;
+		}
 		boolean stop = false;
 
 		ArrayList <Integer> actualVertices = new ArrayList<>();
@@ -588,38 +593,33 @@ public class L3_B2_Graphe {
 		
 		int k = 1;
 		do {
-//			//debug
-//			System.out.print("k=" + k + " ");
-//			//
-			
 			String[] tmpLine = new String[nbSommets + 1];
 			tmpLine[0] = " k=" + Integer.toString(k) + " ";
 			
 			for (int actualVertex : actualVertices) {
-//				//debug
-//				System.out.print(" Sommet en cours: " + actualVertex);
-//				//
 				for (int successor : successorsOf(actualVertex)) {						
-					nodesHashMap.get(successor).setVertex(actualVertex);
 					
 					if(nodesHashMap.get(actualVertex).getDistance() != INFINITY)
 						actualDistance = nodesHashMap.get(actualVertex).getDistance();
 					else
 						actualDistance = 0;
 					
-					//nodesHashMap.get(successor).setDistance(actualDistance + min(whatIsEdgeWeight(actualVertex, successor), nodesHashMap.get(successor).getDistance()));
+					nodesHashMap.get(successor).setVertex(actualVertex);
 					nodesHashMap.get(successor).setDistance(min(nodesHashMap.get(successor).getDistance(), actualDistance + whatIsEdgeWeight(actualVertex, successor)));
+					
+					/** Permet de detecter la presence d'un circuit absorbant*/
+					if(nodesHashMap.get(successor).getDistance() != INFINITY 
+							&& nodesHashMap.get(successor).getDistance() < 0){
+						System.out.println("Le graphe comporte un circuit absorbant..");
+						bellmanArray.clear();
+						return;
+					}
+					/** */
 		
 					nextVertices.add(successor);
-					
 				}
-//				//debug
-//				printSuccessorsOf(actualVertex);
-//				//
-
 			}		
-			//System.out.println(actualVertices);
-
+			
 			actualVertices.clear();
 			for (int nextVertex : removeDuplicates(nextVertices)) {
 				actualVertices.add(nextVertex);
@@ -632,18 +632,13 @@ public class L3_B2_Graphe {
 			}
 
 			bellmanArray.add(tmpLine);
-
-//			if(stop(tmpLine)) {
-//				stop = true;
-//				System.out.println("OKAY");
-//			}
-//			else System.out.println("PAS OKAY");
 			if(stop(tmpLine)) stop = true;
-			if(k == 10) stop = true;
+			if(k == 20) stop = true;
 			k++;
 		}while(!stop);
 		printBellmanArray();
 		trace(startVertex, bellmanArray, "Bellman");
+		bellmanArray.clear();
 	}
 	
 	/**
@@ -722,7 +717,10 @@ public class L3_B2_Graphe {
 	public void calculateMinValuePaths() {
 		//Scanner sc = new Scanner(System.in);
 		
-		bellman(0);
+		for (int i = 0; i < 6; i++) {
+			bellman(i);
+		}
+		
 		
 		//dijkstra(0);
 		
