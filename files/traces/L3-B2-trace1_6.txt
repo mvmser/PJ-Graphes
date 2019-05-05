@@ -1,8 +1,0 @@
--------- Algorithme de Bellman --------
- CC    0     1     2     3     4     5     6     7   
- k=0  inf   inf   inf   inf   inf   inf   0(6)  inf  
- k=1  inf   inf   inf   inf   inf   inf   0(6)  4(6) 
- k=2  inf   inf   inf   5(7)  inf   inf   0(6)  4(6) 
- k=3  inf   inf   7(3)  5(7)  inf   inf   0(3)  4(6) 
- k=4  inf   inf   7(3)  5(7)  inf   inf   0(2)  4(6) 
- k=5  inf   inf   7(3)  5(7)  inf   inf   0(2)  4(6) 

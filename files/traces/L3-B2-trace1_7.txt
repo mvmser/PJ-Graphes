@@ -1,7 +1,6 @@
--------- Algorithme de Bellman --------
- CC    0     1     2     3     4     5     6     7   
- k=0  inf   inf   inf   inf   inf   inf   inf   0(7) 
- k=1  inf   inf   inf   1(7)  inf   inf   inf   0(7) 
- k=2  inf   inf   3(3)  1(7)  inf   inf   1(3)  0(7) 
- k=3  inf   inf   3(3)  1(7)  inf   inf   1(2)  0(6) 
- k=4  inf   inf   3(3)  1(7)  inf   inf   1(2)  0(6) 
+-------- Algorithme de Dijkstra --------
+ CC	0	1	2	3	4	5	6	7	
+7	inf	inf	inf	1(7)	inf	inf	inf	.	
+73	inf	inf	3(3)	.	inf	inf	1(3)	.	
+736	inf	inf	3(3)	.	inf	inf	.	.	
+7362	inf	inf	.	.	inf	inf	.	.	

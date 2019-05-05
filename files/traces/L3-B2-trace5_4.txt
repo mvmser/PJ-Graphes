@@ -1,8 +1,7 @@
--------- Algorithme de Bellman --------
- CC    0     1     2     3     4     5   
- k=0  inf   inf   inf   inf   0(4)  inf  
- k=1  inf   inf   inf   2(4)  0(4)  inf  
- k=2  inf   inf   5(3)  2(4)  0(4)  inf  
- k=3  inf   9(2)  5(3)  2(4)  0(4)  inf  
- k=4  14(1) 9(2)  5(3)  2(4)  0(4)  inf  
- k=5  14(1) 9(2)  5(3)  2(4)  0(4)  inf  
+-------- Algorithme de Dijkstra --------
+ CC	0	1	2	3	4	5	
+4	inf	inf	inf	2(4)	.	/	
+43	inf	inf	5(3)	.	.	/	
+432	inf	9(2)	.	.	.	/	
+4321	14(1)	.	.	.	.	/	
+43210	.	.	.	.	.	/	

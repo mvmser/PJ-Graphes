@@ -583,6 +583,7 @@ public class L3_B2_Graphe {
 							&& nodesHashMap.get(successor).getDistance() < 0){
 						isNegativeCycle = true;
 						System.out.println("Le graphe comporte un circuit absorbant..");
+						trace(startVertex, "Le graphe comporte un circuit absorbant..");
 						bellmanArray.clear();
 						return;
 					}
@@ -602,11 +603,9 @@ public class L3_B2_Graphe {
 			for (int i = 1; i < tmpLine.length; i++) {
 				tmpLine[i] = nodesHashMap.get(i - 1).toString();
 			}
-
+			
 			bellmanArray.add(tmpLine);
-			System.out.println(bellmanArray.size() + " k: " + k);
 			if(stop(tmpLine)) stop = true;
-			if(k == 20) stop = true;
 			k++;
 		}while(!stop);
 		printBellmanArray();
@@ -620,12 +619,22 @@ public class L3_B2_Graphe {
 	 * @return vrai si il faut stoper faux sinon
 	 */
 	public boolean stop(String[] tmpLine) {
+		boolean loop = false;
+		for (int i = 1; i < tmpLine.length; i++) {
+			if(!(bellmanArray.get(bellmanArray.size() - 3)[i]).equals(tmpLine[i])) {
+				loop = false;
+				break;
+			}else
+				loop = true;
+		}
+		
+		if(loop == true) return true;
+		
 		for (int i = 1; i < tmpLine.length; i++) {
 			if(!(bellmanArray.get(bellmanArray.size() - 2)[i]).equals(tmpLine[i]))
 				return false;
-//			if((bellmanArray.get(bellmanArray.size() - 3)[i]).equals(tmpLine[i]))
-//				return true;
 		}
+		
 		return true;
 	}
 	
@@ -826,6 +835,21 @@ public class L3_B2_Graphe {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	/**
+	 * Permet d'enregistrer une trace avec un message
+	 */
+	public void trace(int startVertex, String msg) {
+		try {
+			PrintWriter fichier = new PrintWriter(RESOURCES_PATH_TRACE + "L3-B2-trace" + this.numGraph + "_" + startVertex + ".txt");
+
+			fichier.println(msg);
+			
+			fichier.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**

@@ -1,5 +1,0 @@
--------- Algorithme de Dijkstra --------
- CC	0	1	2	3	4	
-2	/	inf	.	3(2)	8(2)	
-23	/	inf	.	.	7(3)	
-234	/	inf	.	.	.	

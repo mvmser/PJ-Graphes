@@ -173,6 +173,14 @@ public class L3_B2_InterfaceGraphique extends JFrame{
 		JButton btnBellman_1 = new JButton("Bellman");
 		btnBellman_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				/** On actualise */
+				panelCards.removeAll();
+				panelCards.add(fenetreAccueil(), ACCUEIL);
+				panelCards.add(fenetreAjdacence(), MATRICE_ADJACENCE);	
+				panelCards.add(fenetreValeur(), MATRICE_VALEURS);
+				panelCards.add(fenetreBellman(), BELLMAN);
+				panelCards.add(fenetreDijkstra(), DIJKSTRA);
+				
 				((CardLayout) panelCards.getLayout()).show(panelCards, BELLMAN);
 				FENETRE_EN_COURS = BELLMAN; //pour savoir sur qu'elle vue on est
 			}
@@ -184,6 +192,14 @@ public class L3_B2_InterfaceGraphique extends JFrame{
 		JButton btnDijkstra = new JButton("Dijkstra");
 		btnDijkstra.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				/** On actualise */
+				panelCards.removeAll();
+				panelCards.add(fenetreAccueil(), ACCUEIL);
+				panelCards.add(fenetreAjdacence(), MATRICE_ADJACENCE);	
+				panelCards.add(fenetreValeur(), MATRICE_VALEURS);
+				panelCards.add(fenetreBellman(), BELLMAN);
+				panelCards.add(fenetreDijkstra(), DIJKSTRA);
+				
 				((CardLayout) panelCards.getLayout()).show(panelCards, DIJKSTRA);
 				FENETRE_EN_COURS = DIJKSTRA; //pour savoir sur qu'elle vue on est
 			}
@@ -194,12 +210,12 @@ public class L3_B2_InterfaceGraphique extends JFrame{
 	
 		/** fin header*/
 		
-		/** (inutile)*/
-		panelCards.add(fenetreAccueil(), ACCUEIL);
-		panelCards.add(fenetreAjdacence(), MATRICE_ADJACENCE);		
-		panelCards.add(fenetreValeur(), MATRICE_VALEURS);
-		panelCards.add(fenetreBellman(), BELLMAN);		
-		panelCards.add(fenetreDijkstra(), DIJKSTRA);
+//		/** (inutile)*/
+//		panelCards.add(fenetreAccueil(), ACCUEIL);
+//		panelCards.add(fenetreAjdacence(), MATRICE_ADJACENCE);		
+//		panelCards.add(fenetreValeur(), MATRICE_VALEURS);
+//		panelCards.add(fenetreBellman(), BELLMAN);		
+//		panelCards.add(fenetreDijkstra(), DIJKSTRA);
 		
 		return panel;
 	}
@@ -382,7 +398,6 @@ public class L3_B2_InterfaceGraphique extends JFrame{
 				
 				if(!graphe.isNegativeCycle()) {
 					bellmanArray = graphe.getBellmanArray();
-					System.out.println(bellmanArray.size());
 					
 					/** on ajoute */
 					for (String[] line : bellmanArray) {
