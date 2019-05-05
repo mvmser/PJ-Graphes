@@ -5,16 +5,20 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
 /**
- * @version 1.0
- *
+ * Classe graphe
+ * Permet la lecture et la creation d'un graphe
+ * Permet aussi d'effectuer tous les calculs liés a ce graphe
+ * C'est à dire les matrices d'adjacence et de valeurs, 
+ * mais aussi le calcul du plus court chemin
+ * @author SERHIR
+ * @author ZARGA
+ * @author CHIBOUT
  */
 public class L3_B2_Graphe {
 	/** Attribut permettant de connaitre le dossier ou se situent les graphes*/
@@ -22,7 +26,8 @@ public class L3_B2_Graphe {
 	private final static String RESOURCES_PATH_TRACE = "files/traces/";
 
 	
-	/** Attribut contenant le nombre de sommets*/
+	/** Attribut contenant le nombre de sommets, le nombre d'arc, le numero du graphe, 
+	 * et s'il comporte un cycle negatif ou non*/
 	private int nbSommets;
 	private int nbArc;
 	private int numGraph;
@@ -31,20 +36,26 @@ public class L3_B2_Graphe {
 	/** Attribut contenant tous les arcs */
 	private ArrayList<L3_B2_Edge> edges = new ArrayList<L3_B2_Edge>();
 
+	/** Tableaux contenant le resultat des algorithmes de calcul du plus court chemin */
 	private ArrayList<String[]> bellmanArray = new ArrayList<String[]>();
 	private ArrayList<String[]> dijkstraArray = new ArrayList<String[]>();
 
+	/** HashMap des noeuds: la clé est le numéro du sommet, le noeud contient les infos à afficher*/
 	private HashMap<Integer, L3_B2_Node> nodesHashMap= new HashMap<Integer, L3_B2_Node>();
 	private HashMap<Integer, L3_B2_Node> nodesDijkstraHashMap= new HashMap<Integer, L3_B2_Node>();
 
-	
+	/** Attributs constants*/
 	private final int INFINITY = Integer.MAX_VALUE;
+	private final int NO_PRED = -2;
+	private final int POINT = -1;
+
 	
+	/** Atribut contenant tous les fichiers existants*/
 	private static ArrayList<Integer> filesNames = new ArrayList<Integer>();
 	
 	/**
 	 * Constructeur du Graphe
-	 * @param numeroFichier
+	 * @param numeroFichier numero du Fichier
 	 */
 	public L3_B2_Graphe(int numeroFichier) {
 		numGraph = numeroFichier;
@@ -67,25 +78,42 @@ public class L3_B2_Graphe {
 		return nbArc;
 	}
 	
+	/**
+	 * Permet de recuperer le tableau de bellman
+	 * @return tableau de bellman
+	 */
 	public ArrayList<String[]> getBellmanArray(){
 		return bellmanArray;
 	}
 	
+	/**
+	 * Permet de recuperer le tableau de Dijkstra
+	 * @return tableau de dijkstra
+	 */
 	public ArrayList<String[]> getDijkstraArray(){
 		return dijkstraArray;
 	}
 	
+	/** 
+	 * Permet de savoir si le graphe comporte un cycle negatif (utilisé pour l'interface graphique)
+	 * @return vrai s'il y a presence de cycle negatif, faus sinon
+	 */
 	public boolean isNegativeCycle(){
 		return isNegativeCycle;
 	}
 	
+	/**
+	 * Permet de reset tous les tableaux comportant le resultat du calcul des plus court chemins
+	 * Utilisable par la version graphique pour eviter tout probleme.
+	 */
 	public void resetArraysLists(){
 		bellmanArray.clear();
 		dijkstraArray.clear();
 	}
+	
 	/**
-	 * Permet de connaitre tous les fichiers prï¿½sent dans le dossier files
-	 * @return
+	 * Permet de connaitre tous les fichiers présent dans le dossier files
+	 * @return liste des fichiers
 	 */
 	public static ArrayList<Integer> lookFiles() {
 		File repertoire = new File(RESOURCES_PATH);
@@ -108,7 +136,7 @@ public class L3_B2_Graphe {
 	
 	/**
 	 * Permet de savoir si le fichier existe ou non
-	 * @param fileNumber
+	 * @param fileNumber numero du fichier
 	 * @return vrai s'il existe faux sinon
 	 */
 	public static boolean isFileExist(int fileNumber) {
@@ -124,8 +152,7 @@ public class L3_B2_Graphe {
 
 	/**
 	 * Permet de lire un graphe et de l'enregistrer
-	 * @param numeroFichier
-	 * @since 1.0
+	 * @param numeroFichier numero du fichier
 	 */
 	public void readGraphe(int numeroFichier) {
 		try {
@@ -168,7 +195,7 @@ public class L3_B2_Graphe {
 
 	/**
 	 * Permet de convertir un tableau de String en tableau d'entier
-	 * @param stringArray
+	 * @param stringArray tableau de string
 	 * @return un tableau d'entier
 	 * @since 1.0
 	 */
@@ -188,7 +215,7 @@ public class L3_B2_Graphe {
 	
 	/**
 	 * Permet d'initialiser une matrice 
-	 * @param matrix
+	 * @param matrix matrice
 	 * @return une matrice sous forme d'un tableau 2D
 	 * @since 1.0
 	 */
@@ -215,9 +242,9 @@ public class L3_B2_Graphe {
 	/**
 	 * Permet de savoir s'il y a une ncidence entre 2 sommets
 	 * de x vers y
-	 * @param x
-	 * @param y
-	 * @return vrai si x -> y (adjacent) sinon faux
+	 * @param x sommet x
+	 * @param y sommet y
+	 * @return vrai si x -- y (adjacent) sinon faux
 	 * @since 1.0
 	 */
 	public boolean isXIncidentToY(int x, int y) {
@@ -251,10 +278,10 @@ public class L3_B2_Graphe {
 	}
 	
 	/**
-	 * Permet de connaitre la valeur entre 2 sommets x->y
-	 * @param x
-	 * @param y
-	 * @return
+	 * Permet de connaitre la valeur entre 2 sommets x--y
+	 * @param x sommet x
+	 * @param y sommet y
+	 * @return valeur entre les 2 sommets
 	 */
 	public String whatIsValue(int x, int y) {
 		
@@ -287,7 +314,7 @@ public class L3_B2_Graphe {
 	
 	/**
 	 * Permet d'afficher une matrice
-	 * @param matrix
+	 * @param matrix matrice
 	 * @since 1.0
 	 */
 	public void printMatrix(String[][] matrix) {
@@ -313,8 +340,8 @@ public class L3_B2_Graphe {
 	
 	/**
 	 * Permet de connaitre la valeur minimal entre 2 entiers
-	 * @param a
-	 * @param b
+	 * @param a entier a
+	 * @param b entier b
 	 * @return l'entier minimal
 	 */
 	public int min(int a, int b) {
@@ -324,7 +351,7 @@ public class L3_B2_Graphe {
 	
 	/**
 	 * Permet de retourner le ou les successeurs d'un sommet 
-	 * @param un sommet
+	 * @param vertex un sommet
 	 * @return tableau de successeurs
 	 */
 	public ArrayList<Integer> successorsOf(int vertex){
@@ -344,7 +371,7 @@ public class L3_B2_Graphe {
 	
 	/**
 	 * Permet de connaitre le ou les predeccesseurs d'un sommet donnï¿½
-	 * @param un sommet
+	 * @param vertex un sommet
 	 * @return tableau de predeccesseurs
 	 */
 	public ArrayList<Integer> predeccessorOf(int vertex){
@@ -356,7 +383,7 @@ public class L3_B2_Graphe {
 			}	
 		}
 		
-		if(predeccessorsArray.size() == 0) predeccessorsArray.add(vertex);
+		//if(predeccessorsArray.size() == 0) predeccessorsArray.add(vertex);
 		
 		/** On trie par ordre croissant*/
 		Collections.sort(predeccessorsArray);
@@ -366,7 +393,7 @@ public class L3_B2_Graphe {
 	
 	/**
 	 * Permet d'afficher les successeurs d'un sommet
-	 * @param un sommet
+	 * @param vertex un sommet
 	 */
 	public void printSuccessorsOf(int vertex) {
 		ArrayList<Integer> successorsArray =  successorsOf(vertex);
@@ -385,7 +412,7 @@ public class L3_B2_Graphe {
 	
 	/**
 	 * Permer d'afficher le ou les predecesseurs d'un sommet
-	 * @param un sommet
+	 * @param vertex un sommet
 	 */
 	public void printPredeccessorsOf(int vertex) {
 		ArrayList<Integer> predeccessorArray =  predeccessorOf(vertex);
@@ -401,10 +428,10 @@ public class L3_B2_Graphe {
 	
 	/**
 	 * Permet de connaitre la valeur entre 2 arc
-	 * utilisï¿½ uniquement entre un sommet et son successeur
-	 * @param initialEnd
-	 * @param finalEnd
-	 * @return
+	 * utiliser uniquement entre un sommet et son successeur
+	 * @param initialEnd sommet de depart
+	 * @param finalEnd sommet d'arrivee
+	 * @return le poids entre les 2 sommets
 	 */
 	public int whatIsEdgeWeight(int initialEnd, int finalEnd) {	
 		int edgeWeight = Integer.MAX_VALUE;
@@ -445,7 +472,7 @@ public class L3_B2_Graphe {
 	
 	/**
 	 * Permet d'initialiser le belman avec un sommet de depart
-	 * @param un sommet de depart
+	 * @param  startVertex un sommet de depart
 	 */
 	public void initDijkstra(int startVertex) {
 		/** Creation et initilisation du header*/
@@ -459,6 +486,7 @@ public class L3_B2_Graphe {
 		
 		/** Initialisation..*/
 		for(int i = 0; i < nbSommets; i++) {
+			nodesDijkstraHashMap.put(i, new L3_B2_Node(i, NO_PRED));
 			for (int pred : predeccessorOf(i)) {	
 				 if(startVertex == pred)
 					nodesDijkstraHashMap.put(i, new L3_B2_Node(i, whatIsEdgeWeight(pred, i)));
@@ -471,15 +499,14 @@ public class L3_B2_Graphe {
 		/** Initialisation..*/
 		for (int succ : successorsOf(startVertex)) {	
 			nodesDijkstraHashMap.put(succ, new L3_B2_Node(startVertex, whatIsEdgeWeight(startVertex, succ)));
-
 		}	
 		/** -1 pour afficher le point dans le tableau*/
-		nodesDijkstraHashMap.put(startVertex, new L3_B2_Node(startVertex, -1));
+		nodesDijkstraHashMap.put(startVertex, new L3_B2_Node(startVertex, POINT));
 	}
 	
 	/**
 	 * Permet d'initialiser le belman avec un sommet de depart
-	 * @param un sommet de depart
+	 * @param startVertex un sommet de depart
 	 */
 	public void initBellman(int startVertex) {
 		/** Creation et initilisation du header*/
@@ -512,19 +539,9 @@ public class L3_B2_Graphe {
 		bellmanArray.add(initLine);
 	}
 	
-	private List<Integer> adjacency(Integer[][] G, int v) {
-	    List<Integer> result = new ArrayList<Integer>();
-	    for (int x = 0; x < G.length; x++) {
-	      if (G[v][x] != null) {
-	        result.add(x);
-	      }
-	    }
-	    return result;
-  	}
-	
 	/**
 	 * Algorithme de Bellman
-	 * @param sommetDepart
+	 * @param startVertex sommet de Depart
 	 */
 	public void bellman(int startVertex) {
 		System.out.println("\n -----ALGORITHME DE BELLMAN-----");
@@ -567,7 +584,6 @@ public class L3_B2_Graphe {
 						isNegativeCycle = true;
 						System.out.println("Le graphe comporte un circuit absorbant..");
 						bellmanArray.clear();
-						System.out.println("NEG : " + isNegativeCycle());
 						return;
 					}
 					/** */
@@ -588,6 +604,7 @@ public class L3_B2_Graphe {
 			}
 
 			bellmanArray.add(tmpLine);
+			System.out.println(bellmanArray.size() + " k: " + k);
 			if(stop(tmpLine)) stop = true;
 			if(k == 20) stop = true;
 			k++;
@@ -598,24 +615,24 @@ public class L3_B2_Graphe {
 	
 	/**
 	 * Permet de savoir quand l'algo doit d'arreter
-	 * si 2 itï¿½rations sont ï¿½gales, retourner vrai
-	 * @param tmpLine
-	 * @return
+	 * si 2 itérations sont égales, retourner vrai
+	 * @param tmpLine ligne a comparer
+	 * @return vrai si il faut stoper faux sinon
 	 */
 	public boolean stop(String[] tmpLine) {
 		for (int i = 1; i < tmpLine.length; i++) {
-//			System.out.println("tmp: " + tmpLine[i] + "bell: " 
-//					+ bellmanArray.get(bellmanArray.size() - 1)[i]);
 			if(!(bellmanArray.get(bellmanArray.size() - 2)[i]).equals(tmpLine[i]))
 				return false;
+//			if((bellmanArray.get(bellmanArray.size() - 3)[i]).equals(tmpLine[i]))
+//				return true;
 		}
 		return true;
 	}
 	
 	/**
 	 * Permet de supprimer les duplicats d'un arraylist
-	 * @param list
-	 * @return
+	 * @param list liste
+	 * @return arraylist sans duplicata
 	 */
 	public ArrayList<Integer> removeDuplicates(ArrayList<Integer> list) 
     { 
@@ -630,6 +647,10 @@ public class L3_B2_Graphe {
         return newList; 
     } 
 	
+	/**
+	 * Permet de calculer le chemin de valeurs minimal avec l'algorithme de Dijkstra
+	 * @param startVertex sommet de depart
+	 */
 	public void dijkstra(int startVertex) {
 		System.out.println("\n -----ALGORITHME DE DIJKSTRA-----");
 		initDijkstra(startVertex);
@@ -642,7 +663,6 @@ public class L3_B2_Graphe {
 		for (int i = 0; i < nbSommets; i++) {
 			if(i != startVertex) M.add(i);
 		}
-		System.out.println(M.size());
 		
 		/** Initialisation de la line contenant la 1ere iteration*/
 		String[] initLine = new String[nbSommets + 1];
@@ -651,15 +671,13 @@ public class L3_B2_Graphe {
 		/** Quand on a fini tous les calul, on enregistre le tout en string pour l'afficher*/
 		for (int i = 1; i < initLine.length; i++) {
 			initLine[i] = nodesDijkstraHashMap.get(i - 1).toStringDijkstra() + "\t";
+			//System.out.println("i: " + i + nodesDijkstraHashMap.get(i - 1).toStringDijkstra());
 		}
 		
 		dijkstraArray.add(initLine);
 			
 		do
 		{
-			/** debug*/
-			System.out.println("CC: " + CC);
-			System.out.println("M: " + M);
 			Entry<Integer, L3_B2_Node> currentNode = getLowestDistance(nodesDijkstraHashMap, M);
 			if(currentNode != null) {
 				/** Permet de mettre un sommet de M vers CC*/
@@ -667,7 +685,6 @@ public class L3_B2_Graphe {
 					if(currentNode != null && M.get(i) == currentNode.getKey()) {
 						CC.add(M.get(i));
 						M.remove(i);
-						Collections.sort(CC);
 						break;
 					}
 				}
@@ -675,13 +692,12 @@ public class L3_B2_Graphe {
 				for (Integer successor : successorsOf(currentNode.getKey()) ) {
 					for(Entry<Integer, L3_B2_Node> entry : nodesDijkstraHashMap.entrySet()) {
 					    if(entry.getKey() == successor) {
-					    	if(entry.getValue().getDistance() != -1) {
+					    	if(entry.getValue().getDistance() != POINT) {
 					    		L3_B2_Node node = entry.getValue();
 						    	if(currentNode.getValue().getDistance() != INFINITY ) {
 						    		node.setDistance(currentNode.getValue().getDistance() +
 							    			whatIsEdgeWeight(currentNode.getKey(), successor));
 						    		node.setVertex(currentNode.getKey());
-						    		//currentNode.getValue().setVertex(vertex);
 						    	}
 					    	}
 					    }
@@ -689,14 +705,17 @@ public class L3_B2_Graphe {
 				}
 				
 				/** On connait ce sommet, on inquique un point a la ligne suivante*/
-				currentNode.getValue().setDistance(-1);
+				currentNode.getValue().setDistance(POINT);
 				
 				/** Quand on a fini tous les calul, on enregistre le tout en string pour l'afficher*/
 				String[] tmpLine = new String[nbSommets + 1];
 				tmpLine[0] = arrayListToString(CC);
 				for (int i = 1; i < tmpLine.length; i++) {
 					tmpLine[i] = nodesDijkstraHashMap.get(i - 1).toStringDijkstra() + "\t";
+					if(CC.size() >= 8)
+						tmpLine[1] = nodesDijkstraHashMap.get(1 - 1).toStringDijkstra() + "";
 				}
+				
 
 				dijkstraArray.add(tmpLine);
 			}else {
@@ -704,14 +723,18 @@ public class L3_B2_Graphe {
 			}
 		}while(!M.isEmpty());
 		
-		
-		/** debug*/
-		System.out.println("CC: " + CC);
-		System.out.println("M: " + M);
-
 		printDijkstraArray();
+		/** On enregistre la trace*/
+		trace(startVertex, dijkstraArray, "Dijkstra");
 	}
 	
+	/**
+	 * Pour l'algorithme de Dijkstra
+	 * Permet de connaite le sommet qui a la distance la plus petite
+	 * @param nodesDijkstraHashMap hashmap contenant le sommet ainsi que son noeud
+	 * @param M les sommets pas encore visités
+	 * @return le couple clé-valeur avec la distance minimale
+	 */
 	public Entry<Integer, L3_B2_Node> getLowestDistance(HashMap<Integer, L3_B2_Node> nodesDijkstraHashMap, 
 			ArrayList<Integer> M) {
 		int lowestDistance = INFINITY;
@@ -720,7 +743,7 @@ public class L3_B2_Graphe {
 		for(Entry<Integer, L3_B2_Node> entry : nodesDijkstraHashMap.entrySet()) {
 		    int vertex = entry.getKey();
 		    L3_B2_Node node = entry.getValue();
-		    if(M.contains(vertex)) {
+		    if(M.contains(vertex) && node.getDistance() != NO_PRED) {
 		    	if(node.getDistance() < lowestDistance) {
 		    		lowestDistance = node.getDistance();
 		    		lowestDistanceNode = entry;
@@ -730,6 +753,13 @@ public class L3_B2_Graphe {
 		return lowestDistanceNode;
 	}
 	
+	/**
+	 * Permet de convertir une ArrayList contenant des entiers en 
+	 * une seule chaine de caractere
+	 * (utilisable par l'algorithme de dijkstra, pour les sommets parcouru)
+	 * @param list list a transformer
+	 * @return liste en string
+	 */
 	public String arrayListToString(ArrayList<Integer> list) {
 		String str = "";
 		for (int vertex : list) {
@@ -739,17 +769,14 @@ public class L3_B2_Graphe {
 		return str;
 	}
 	
+	/***
+	 * Permet de clalculer le chemin de valeur minimale en fonction de différentes choses:
+	 * s'il y a un arc de valeur negative on execute bellman
+	 * sinon l'utilisateur a le choix
+	 */
 	public void calculateMinValuePaths() {
 		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
-		
-			bellman(0);
-			bellmanArray.clear();
-
-		
-		
-		dijkstra(2);
-		
 		
 		if(isArcNegativeValue()) {
 			System.out.println("Il y a presence d'au moins un arc a valeur negative.");
@@ -762,7 +789,6 @@ public class L3_B2_Graphe {
 			System.out.println("Algorithme de Bellman ou Dijkstra ?");
 			System.out.println("1. Bellman");
 			System.out.println("2. Dijkstra");
-			sc.nextLine();
 			int choix = sc.nextInt();
 			
 			System.out.println("Quel est le sommet de depart ?");
@@ -777,10 +803,11 @@ public class L3_B2_Graphe {
 	}
 	
 	/**
-	 * Tout ce qui figure sur lï¿½ï¿½cran, doit en mï¿½me temps ï¿½tre ï¿½crit dans un fichier
-		L3-<numï¿½ro dï¿½ï¿½quipe>- trace#_#.txt, oï¿½ le premier # doit ï¿½tre remplacï¿½ par le numï¿½ro du graphe test, et le
-		second, par le numï¿½ro du sommet dï¿½origine. Par exemple, si vous exï¿½cutez la recherche des chemins les plus
-		courts sur le graphe 5 depuis le sommet 3, le fichier crï¿½ï¿½ doit sï¿½appeler L3-<numï¿½ro dï¿½ï¿½quipe>-trace5_3.txt.
+	 * Permet d'enregistrer une trace lors de l'exécution d'un algoritme de calcul de chemin minimal
+	 * @return vrai si la trace a eté exécutée faux sinon
+	 * @param startVertex sommet de depart
+	 * @param stringMinValuePaths un algo de calcul valeur min
+	 * @param algo nom de cet algo
 	 */
 	public boolean trace(int startVertex, ArrayList<String[]> stringMinValuePaths, String algo) {
 		try {
@@ -801,6 +828,9 @@ public class L3_B2_Graphe {
 		return false;
 	}
 	
+	/**
+	 * Permet un affichage correct des arcs
+	 */
 	@Override
 	public String toString() {
 		String tmp = "";

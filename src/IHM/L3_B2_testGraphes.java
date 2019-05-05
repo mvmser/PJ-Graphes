@@ -5,13 +5,18 @@ import java.util.Scanner;
 import readGraphe.L3_B2_Graphe;
 
 /**
- * @version 1.0
- *
+ * Classe main de la version console du programme.
+ * Permet à l'utilisateur de choisir un fichier graphe, puis lance 
+ * la creation et l'affichage des deux matrices et du plus court chemin
+ * @author SERHIR
+ * @author ZARGA
+ * @author CHIBOUT
  */
 public class L3_B2_testGraphes {	
+	
 	/**
-	 * @param args
-	 * @since 1.0
+	 * Methode main
+	 * @param args args
 	 */
 	public static void main(String[] args) {
 		/**Variable pr savoir quand quitter*/
@@ -43,8 +48,10 @@ public class L3_B2_testGraphes {
 			}
 			sc.nextLine(); //clear buffer
 			
+			/** Creation du graphe*/
 			L3_B2_Graphe graphe = new L3_B2_Graphe(fileNumber);
 			
+			/** Affichage des arcs du graphe*/
 			System.out.println(graphe);
 			
 			System.out.println("\nMatrice d'adjacence: (nombre de sommets: " + graphe.getNbSommets() + ")" );
