@@ -1,0 +1,6 @@
+-------- Algorithme de Dijkstra --------
+ CC	0	1	2	3	4	5	6	7	
+3	inf	inf	2(3)	.	inf	inf	0(3)	inf	
+36	inf	inf	2(3)	.	inf	inf	.	4(6)	
+362	inf	inf	.	.	inf	inf	.	4(6)	
+3627	inf	inf	.	.	inf	inf	.	.	
